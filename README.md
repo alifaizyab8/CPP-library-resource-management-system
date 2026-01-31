@@ -54,7 +54,7 @@ This section will be edited soon
 | :--- | :--- | :--- |
 | **Ali Faizyab Khan** | ✅ Committed and pushed latest updates | 30-1-26 |
 | **Syed Waqar Wasif** | ✅ Committed and pushed latest updates | 30-1-26 |
-| **Rameen Zulfi** | ⏳ *Pending update* | - |
+| **Rameen Zulfi**     | ✅ Committed and pushed latest updates | 31-1-26 |
 | **Syeda Bareerah** | ⏳ *Pending update* | - |
 
 ---
