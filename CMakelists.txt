@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(LibraryManagementSystem LANGUAGES C CXX)
+
+# ---- Standards ----
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+# ---- Include directories ----
+include_directories(
+    ${PROJECT_SOURCE_DIR}/include
+)
+
+# ---- Collect all C++ source files ----
+file(GLOB_RECURSE SRC_FILES
+    "${PROJECT_SOURCE_DIR}/src/*.cpp"
+)
+
+# ---- Manually add the SQLite C source file ----
+list(APPEND SRC_FILES "${PROJECT_SOURCE_DIR}/include/sqlite3.c")
+
+# ---- Create executable ----
+add_executable(LibraryManagementSystem ${SRC_FILES})
+
+# Note: find_package(SQLite3 REQUIRED) and target_link_libraries are removed.
+# You might need to link standard system threads depending on your OS, 
+# but usually, just compiling the amalgamation file is enough.
