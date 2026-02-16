@@ -32,4 +32,5 @@ public:
 
     // Get exposed pointer to the database
     sqlite3 *getConnection() const;
+    // Test branch Addition
 };
