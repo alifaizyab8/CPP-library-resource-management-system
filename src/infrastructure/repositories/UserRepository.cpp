@@ -1,6 +1,6 @@
 #include <iostream>
 #include "../../infrastructure/database/SqliteConnection.h"
-#include "../..infrastructure/repositories/UserRepository.h"
+#include "../../infrastructure/repositories/UserRepository.h"
 #include "../../domain/entities/User.h"
 #include <vector>
 #include <string>
