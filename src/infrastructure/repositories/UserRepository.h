@@ -1,7 +1,7 @@
 #pragma once
 #include<vector>
-#include"User.h"
-#include "SqliteConnection.h"
+#include "../../domain/entities/User.h"
+#include "../../infrastructure/repositories/UserRepository.h"
 #include <iostream>
 
 using namespace std;
