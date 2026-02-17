@@ -29,7 +29,7 @@ void UserRepository ::addUser(string name, string email)
 void UserRepository ::deleteUser(int id)
 {
     const char *sql = "DELETE FROM users WHERE id=?;";
-    sqlite3_stmt *stmt;
+    sqlite3_stmt *stmt = nullptr;
 
     sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
     sqlite3_bind_int(stmt, 1, id);
@@ -68,22 +68,25 @@ int UserRepository ::getUserByID(int id)
         cout << "User Not Found!" << endl;
     }
     sqlite3_finalize(stmt);
+    // Returning 0 for reference right now change it to actual user_id later
+    return 0;
+
 }
 
-   vector<User> UserRepository ::getAllUsers()
-{
-    const char *sql = "SELECT id, name, email FROM users;";
-    sqlite3_stmt *stmt;
+//    vector<User> UserRepository ::getAllUsers()
+// {
+//     const char *sql = "SELECT id, name, email FROM users;";
+//     sqlite3_stmt *stmt;
 
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+//     sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 
-    while (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-        cout << sqlite3_column_int(stmt, 0) << " " << sqlite3_column_text(stmt, 1) << " " << sqlite3_column_text(stmt, 2) << endl;
-    }
+//     while (sqlite3_step(stmt) == SQLITE_ROW)
+//     {
+//         cout << sqlite3_column_int(stmt, 0) << " " << sqlite3_column_text(stmt, 1) << " " << sqlite3_column_text(stmt, 2) << endl;
+//     }
 
-    sqlite3_finalize(stmt);
-}
+//     sqlite3_finalize(stmt);
+// }
 
 vector<User> UserRepository ::searchUsers(const string &keyword)
 {
@@ -99,8 +102,8 @@ vector<User> UserRepository ::searchUsers(const string &keyword)
     sqlite3_bind_text(stmt, 2, pattern.c_str(), -1, SQLITE_STATIC);
 
     while (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-        results.emplace_back(sqlite3_column_int(stmt, 0), (char *)sqlite3_column_text(stmt, 1), (char *)sqlite3_column_text(stmt, 2));
+    {   // There is no constructor for this yet so it will cause errors 
+       // results.emplace_back(sqlite3_column_int(stmt, 0), (char *)sqlite3_column_text(stmt, 1), (char *)sqlite3_column_text(stmt, 2));
     }
     sqlite3_finalize(stmt);
     return results;
