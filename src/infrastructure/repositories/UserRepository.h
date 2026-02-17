@@ -2,6 +2,7 @@
 #include<vector>
 #include "../../domain/entities/User.h"
 #include "../../infrastructure/repositories/UserRepository.h"
+#include"../database/SqliteConnection.h"
 #include <iostream>
 
 using namespace std;
