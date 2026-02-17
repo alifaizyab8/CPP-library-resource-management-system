@@ -1,8 +1,7 @@
 #include <iostream>
-#include "SqliteConnection.h"
 #include "UserRepository.h"
-#include "User.h"
-#include <vector>
+// #include "User.h"
+// #include <vector>
 #include <string>
 
 using namespace std;
