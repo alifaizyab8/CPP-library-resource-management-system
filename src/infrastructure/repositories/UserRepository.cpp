@@ -71,7 +71,7 @@ int UserRepository ::getUserByID(int id)
     sqlite3_finalize(stmt);
 }
 
-string UserRepository ::getAllUsers()
+   vector<User> UserRepository ::getAllUsers()
 {
     const char *sql = "SELECT id, name, email FROM users;";
     sqlite3_stmt *stmt;
