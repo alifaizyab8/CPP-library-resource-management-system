@@ -1,9 +1,6 @@
 #include "SqliteConnection.h"
 #include <iostream>
 
-#include "SQLiteConnection.h"
-#include <iostream>
-
 using namespace std;
 
 // Constructor
