@@ -1,5 +1,6 @@
 #pragma once
-
+#include<vector>
+#include"User.h"
 #include "SqliteConnection.h"
 #include <iostream>
 
