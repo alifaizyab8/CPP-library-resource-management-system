@@ -1,28 +1,24 @@
 #pragma once
-#include<vector>
+#include <vector>
 #include "../../domain/entities/User.h"
 #include "../../infrastructure/repositories/UserRepository.h"
-#include"../database/SqliteConnection.h"
+#include "../database/SqliteConnection.h"
 #include <iostream>
 
 using namespace std;
 
 class UserRepository
 {
+    private:
     sqlite3 *&db; // uses existing database -> Dependency Injection
+     std::string getSafeText(sqlite3_stmt* stmt, int col);
 
 public:
     UserRepository(sqlite3 *connection);
 
-    void addUser(string name, string email);
-    void deleteUser(int id);
-    void updateUser(int id, string name, string email);
-    int getUserByID(int id);
-    string getAllUsers();
-    vector<User> searchUsers(const string &keyword);
-    void findByName(string name);
-    void findByEmail(string email);
-    void verifyLogin(string email, string password);
-    void emailExists(string email);
-    void getPasswordHash(int id);
+    User *findByID(int userId);
+    User *findByUsername(const string &username);
+    vector<User> getAllUsers();
+    bool update(const User &user);
+    bool deleteUser(int userId);
 };

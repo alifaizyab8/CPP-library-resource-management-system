@@ -1,208 +1,216 @@
-#include <iostream>
 #include "UserRepository.h"
-// #include "User.h"
-// #include <vector>
-#include <string>
+#include <sqlite3.h>
+#include <iostream>
 
 using namespace std;
 
-UserRepository ::UserRepository(sqlite3 *connection) : db(connection) {}
-// When created, they are attached to the database
+UserRepository::UserRepository(sqlite3 *connection) : db(connection) {}
 
-void UserRepository ::addUser(string name, string email)
+// ------------------- Private Helper -------------------
+std::string UserRepository::getSafeText(sqlite3_stmt* stmt, int col)
 {
-    const char *sql = "INSERT INTO users(name,email) VALUES (?,?);";
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); // Prepare -> Complies SQL
-    // Q: Why is this important?
-    /* A: They prevent SQL injection (someone tries to run their own query),
-       runs faster, and reuses the query for each repo*/
-
-    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC); // Binds -> Insertion of values are safe
-    sqlite3_bind_text(stmt, 2, email.c_str(), -1, SQLITE_STATIC);
-
-    sqlite3_step(stmt); // Step -> Runs the query
-
-    sqlite3_finalize(stmt); // Finalize -> Frees/Cleans Memory
+    const char* text = reinterpret_cast<const char*>(sqlite3_column_text(stmt, col));
+    return text ? text : "";
 }
-void UserRepository ::deleteUser(int id)
+
+// ------------------- Delete User -------------------
+bool UserRepository::deleteUser(int userId)
 {
-    const char *sql = "DELETE FROM users WHERE id=?;";
+    const char *sql = "DELETE FROM users WHERE user_id=?;";
     sqlite3_stmt *stmt = nullptr;
 
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    sqlite3_bind_int(stmt, 1, id);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
-}
-
-void UserRepository ::updateUser(int id, string name, string email)
-{
-    const char *sql = "UPDATE users SET name=?, email =? WHERE id=?;";
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, email.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 3, id);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
-}
-
-int UserRepository ::getUserByID(int id)
-{
-    const char *sql = "SELECT id, name, email FROM users WHERE id=?;";
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    sqlite3_bind_int(stmt, 1, id);
-    if (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-        cout << sqlite3_column_int(stmt, 0) << " " << sqlite3_column_text(stmt, 1) << " " << sqlite3_column_text(stmt, 2) << endl;
-    }
-    else
-    {
-        cout << "User Not Found!" << endl;
-    }
-    sqlite3_finalize(stmt);
-    // Returning 0 for reference right now change it to actual user_id later
-    return 0;
-
-}
-
-//    vector<User> UserRepository ::getAllUsers()
-// {
-//     const char *sql = "SELECT id, name, email FROM users;";
-//     sqlite3_stmt *stmt;
-
-//     sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-//     while (sqlite3_step(stmt) == SQLITE_ROW)
-//     {
-//         cout << sqlite3_column_int(stmt, 0) << " " << sqlite3_column_text(stmt, 1) << " " << sqlite3_column_text(stmt, 2) << endl;
-//     }
-
-//     sqlite3_finalize(stmt);
-// }
-
-vector<User> UserRepository ::searchUsers(const string &keyword)
-{
-    vector<User> results;
-    const char *sql = "SELECT id, name, email FROM users WHERE name LIKE ? OR email LIKE ?;";
-    // LIKE -> allows partial matches in SQL.. It will match anything containing the word "%" + keyword + "%"
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    string pattern = "%" + keyword + "%";
-    sqlite3_bind_text(stmt, 1, pattern.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, pattern.c_str(), -1, SQLITE_STATIC);
-
-    while (sqlite3_step(stmt) == SQLITE_ROW)
-    {   // There is no constructor for this yet so it will cause errors 
-       // results.emplace_back(sqlite3_column_int(stmt, 0), (char *)sqlite3_column_text(stmt, 1), (char *)sqlite3_column_text(stmt, 2));
-    }
-    sqlite3_finalize(stmt);
-    return results;
-}
-
-void UserRepository ::findByName(string name)
-{
-    const char *sql = "SELECT id, name, email FROM users WHERE name=?;";
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
-
-    while (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-        cout << sqlite3_column_int(stmt, 0) << " " << sqlite3_column_text(stmt, 1) << " " << sqlite3_column_text(stmt, 2) << endl;
-    }
-    sqlite3_finalize(stmt);
-}
-
-void UserRepository ::findByEmail(string email)
-{
-    const char *sql = "SELECT id, name, email FROM users WHERE email=?;";
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    sqlite3_bind_text(stmt, 1, email.c_str(), -1, SQLITE_STATIC);
-
-    if (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-        cout << "User Exists!" << endl;
-    }
-    else
-    {
-        cout << "User Not Found!" << endl;
-    }
-    sqlite3_finalize(stmt);
-}
-
-void UserRepository ::emailExists(string email)
-{
-    const char *sql = "SELECT 1 FROM users WHERE email=?;";
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    sqlite3_bind_text(stmt, 1, email.c_str(), -1, SQLITE_STATIC);
-
-    if (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-        cout << "Email Exists!" << endl;
-    }
-    else
-    {
-        cout << "Email Available!" << endl;
-    }
-    sqlite3_finalize(stmt);
-}
-
-void UserRepository ::verifyLogin(string email, string password)
-{
-    const char *sql = "SELECT password FROM users WHERE email=?;";
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    sqlite3_bind_text(stmt, 1, email.c_str(), -1, SQLITE_STATIC);
-
-    if (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-        string stored = (char *)sqlite3_column_text(stmt, 0);
-        if (stored == password)
-            cout << "Login success!" << endl;
-        else
-            cout << "Wrong password" << endl;
-    }
-    else
-    {
-        cout << "Email not found!" << endl;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        cerr << "Failed to prepare DELETE statement: " << sqlite3_errmsg(db) << endl;
+        return false;
     }
 
-    sqlite3_finalize(stmt);
-}
-
-void UserRepository ::getPasswordHash(int id)
-{
-    const char *sql = "SELECT password FROM users WHERE id=?;";
-    sqlite3_stmt *stmt;
-
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-
-    sqlite3_bind_int(stmt, 1, id);
-
-    if (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-        cout << sqlite3_column_text(stmt, 0) << endl;
-
+    if (sqlite3_bind_int(stmt, 1, userId) != SQLITE_OK) {
+        cerr << "Failed to bind userId in DELETE: " << sqlite3_errmsg(db) << endl;
         sqlite3_finalize(stmt);
+        return false;
     }
+
+    bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    if (!success) {
+        cerr << "Failed to execute DELETE: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+    return success;
+}
+
+// ------------------- Update User -------------------
+bool UserRepository::update(const User &user)
+{
+    const char *sql =
+        "UPDATE users SET address=?, phone=?, balance=?, "
+        "membership_type_id=?, registration_date=?, is_active=? "
+        "WHERE user_id=?;";
+
+    sqlite3_stmt *stmt = nullptr;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        cerr << "Failed to prepare UPDATE statement: " << sqlite3_errmsg(db) << endl;
+        return false;
+    }
+
+    if (sqlite3_bind_text(stmt, 1, user.getAddress().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
+        sqlite3_bind_text(stmt, 2, user.getPhone().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
+        sqlite3_bind_double(stmt, 3, user.getBalance()) != SQLITE_OK ||
+        sqlite3_bind_int(stmt, 4, user.getMembershipTypeId()) != SQLITE_OK ||
+        sqlite3_bind_text(stmt, 5, user.getRegistrationDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
+        sqlite3_bind_int(stmt, 6, user.getIsActive()) != SQLITE_OK ||
+        sqlite3_bind_int(stmt, 7, user.getUserId()) != SQLITE_OK) {
+        cerr << "Failed to bind parameters in UPDATE: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        return false;
+    }
+
+    bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    if (!success) {
+        cerr << "Failed to execute UPDATE: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+    return success;
+}
+
+// ------------------- Find User by ID -------------------
+User* UserRepository::findByID(int userId)
+{
+    const char *sql =
+        "SELECT user_id, username, password, first_name, last_name, email, "
+        "address, phone, balance, membership_type_id, registration_date, is_active "
+        "FROM users WHERE user_id=?;";
+
+    sqlite3_stmt *stmt = nullptr;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        cerr << "Failed to prepare SELECT statement: " << sqlite3_errmsg(db) << endl;
+        return nullptr;
+    }
+
+    if (sqlite3_bind_int(stmt, 1, userId) != SQLITE_OK) {
+        cerr << "Failed to bind userId in SELECT: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        return nullptr;
+    }
+
+    User *user = nullptr;
+    int step = sqlite3_step(stmt);
+    if (step == SQLITE_ROW)
+    {
+        user = new User(
+            sqlite3_column_int(stmt, 0),
+            getSafeText(stmt, 1),
+            getSafeText(stmt, 2),
+            getSafeText(stmt, 3),
+            getSafeText(stmt, 4),
+            getSafeText(stmt, 5),
+            getSafeText(stmt, 6),
+            getSafeText(stmt, 7),
+            sqlite3_column_double(stmt, 8),
+            sqlite3_column_int(stmt, 9),
+            getSafeText(stmt, 10),
+            sqlite3_column_int(stmt, 11)
+        );
+    }
+    else if (step != SQLITE_DONE) {
+        cerr << "Error executing SELECT by ID: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+    return user;
+}
+
+// ------------------- Find User by Username -------------------
+User* UserRepository::findByUsername(const std::string &username)
+{
+    const char *sql =
+        "SELECT user_id, username, password, first_name, last_name, email, "
+        "address, phone, balance, membership_type_id, registration_date, is_active "
+        "FROM users WHERE username=?;";
+
+    sqlite3_stmt *stmt = nullptr;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        cerr << "Failed to prepare SELECT statement: " << sqlite3_errmsg(db) << endl;
+        return nullptr;
+    }
+
+    if (sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK) {
+        cerr << "Failed to bind username in SELECT: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        return nullptr;
+    }
+
+    User *user = nullptr;
+    int step = sqlite3_step(stmt);
+    if (step == SQLITE_ROW)
+    {
+        user = new User(
+            sqlite3_column_int(stmt, 0),
+            getSafeText(stmt, 1),
+            getSafeText(stmt, 2),
+            getSafeText(stmt, 3),
+            getSafeText(stmt, 4),
+            getSafeText(stmt, 5),
+            getSafeText(stmt, 6),
+            getSafeText(stmt, 7),
+            sqlite3_column_double(stmt, 8),
+            sqlite3_column_int(stmt, 9),
+            getSafeText(stmt, 10),
+            sqlite3_column_int(stmt, 11)
+        );
+    }
+    else if (step != SQLITE_DONE) {
+        cerr << "Error executing SELECT by username: " << sqlite3_errmsg(db) << endl;
+    }
+
+    sqlite3_finalize(stmt);
+    return user;
+}
+
+// ------------------- Get All Users -------------------
+std::vector<User> UserRepository::getAllUsers()
+{
+    std::vector<User> users;
+    const char *sql =
+        "SELECT user_id, username, password, first_name, last_name, email, "
+        "address, phone, balance, membership_type_id, registration_date, is_active "
+        "FROM users;";
+
+    sqlite3_stmt *stmt = nullptr;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        cerr << "Failed to prepare SELECT ALL statement: " << sqlite3_errmsg(db) << endl;
+        return users;
+    }
+
+    while (true)
+    {
+        int step = sqlite3_step(stmt);
+        if (step == SQLITE_ROW) {
+            users.emplace_back(
+                sqlite3_column_int(stmt, 0),
+                getSafeText(stmt, 1),
+                getSafeText(stmt, 2),
+                getSafeText(stmt, 3),
+                getSafeText(stmt, 4),
+                getSafeText(stmt, 5),
+                getSafeText(stmt, 6),
+                getSafeText(stmt, 7),
+                sqlite3_column_double(stmt, 8),
+                sqlite3_column_int(stmt, 9),
+                getSafeText(stmt, 10),
+                sqlite3_column_int(stmt, 11)
+            );
+        }
+        else if (step == SQLITE_DONE) {
+            break;
+        }
+        else {
+            cerr << "Error executing SELECT ALL: " << sqlite3_errmsg(db) << endl;
+            break;
+        }
+    }
+
+    sqlite3_finalize(stmt);
+    return users;
 }
