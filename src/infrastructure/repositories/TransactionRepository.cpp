@@ -1,4 +1,5 @@
 #include "TransactionRepository.h"
+#include <sqlite3.h>
 #include <iostream>
 
 using namespace std;

@@ -2,7 +2,9 @@
 #include <sqlite3.h>
 #include <vector>
 #include <string>
-#include "Transaction.h"
+#include "../../domain/entities/Transaction.h"
+#include "../../infrastructure/repositories/TransactionRepository.h"
+#include "../database/SqliteConnection.h"
 
 class TransactionRepository {
 private:
