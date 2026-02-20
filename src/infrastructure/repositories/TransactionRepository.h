@@ -12,7 +12,7 @@ private:
 
 public:
     explicit TransactionRepository(sqlite3* connection);
-    TransactionRepository::~TransactionRepository();
+    ~TransactionRepository();
     // Transaction management
     bool save(const Transaction& transaction);
     bool beginTransaction();
