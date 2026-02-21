@@ -1,30 +1,31 @@
-#ifndef ADMINISTRATOR_H
-#define ADMINISTRATOR_H
-#include "../additional_classes/Person.h" // Include the base class header
+#pragma once
 #include <string>
 
-class Administrator : public Person
+class Administrator
 {
-    private:
-        int admin_id;
-        std::string created_date;
+private:
+    int adminId;
+    std::string username;
+    std::string password;
+    std::string firstName;
+    std::string lastName;
+    std::string email;
+    std::string createdDate;
+    bool isActive;
 
-    public:
-        Administrator();
+public:
+    Administrator(int id, const std::string &uname, const std::string &pass, const std::string &fName,
+                  const std::string &lName, const std::string &email, const std::string &cDate, bool active)
+        : adminId(id), username(uname), password(pass), firstName(fName), lastName(lName),
+          email(email), createdDate(cDate), isActive(active) {}
 
-        Administrator(int id, const std::string &uname, const std::string &pass,
-                    const std::string &fname, const std::string &lname,
-                    const std::string &mail, const std::string &date, bool active = true);
-
-        ~Administrator();
-
-        // Getters 
-        int getAdminId() const;
-        std::string getCreatedDate() const;
-
-        // Setters 
-        void setAdminId(int id);
-        void setCreatedDate(const std::string &date);
+    int getAdminId() const { return adminId; }
+    std::string getUsername() const { return username; }
+    std::string getPassword() const { return password; }
+    std::string getFirstName() const { return firstName; }
+    std::string getLastName() const { return lastName; }
+    std::string getEmail() const { return email; }
+    std::string getCreatedDate() const { return createdDate; }
+    bool getIsActive() const { return isActive; }
+    void setAdminId(int id);
 };
-
-#endif // ADMINISTRATOR_H
