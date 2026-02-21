@@ -13,6 +13,7 @@ DatabaseInitializer::DatabaseInitializer(const std::string &filename)
         sqlite3_close(db);
         throw std::runtime_error("Failed to open database: " + errorMsg);
     }
+    sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
 }
 
 // Destructor.
@@ -33,6 +34,7 @@ bool DatabaseInitializer::open()
         std::cerr << "Cannot open database: " << sqlite3_errmsg(db) << std::endl;
         return false;
     }
+    sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
     return true;
 }
 
