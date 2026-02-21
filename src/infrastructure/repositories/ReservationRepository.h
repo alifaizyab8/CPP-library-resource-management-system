@@ -5,18 +5,19 @@
 
 #include "../../domain/Reservation.h"
 
-class ReservationRepository {
+class ReservationRepository
+{
 private:
-    sqlite3* db;
+    sqlite3 *db;
 
-    bool insertReservation(const Reservation& reservation);
-    bool updateReservation(const Reservation& reservation);
+    bool insertReservation(Reservation &reservation);
+    bool updateReservation(const Reservation &reservation);
 
 public:
-    explicit ReservationRepository(sqlite3* connection);
+    explicit ReservationRepository(sqlite3 *connection);
     ~ReservationRepository();
 
-    bool save(const Reservation& reservation);
+    bool save(Reservation &reservation);
     bool deleteReservation(int reservationId);
 
     std::unique_ptr<Reservation> getById(int reservationId);

@@ -15,7 +15,7 @@ FineRepository::FineRepository(sqlite3 *connection)
 FineRepository::~FineRepository() {}
 
 // ------------------- Insert Fine -------------------
-bool FineRepository::insertFine(const Fine &fine)
+bool FineRepository::insertFine(Fine &fine)
 {
 
     const char *sql =
@@ -55,7 +55,12 @@ bool FineRepository::insertFine(const Fine &fine)
         cerr << "Failed to execute INSERT: "
              << sqlite3_errmsg(db) << endl;
     }
-
+    // Same Auto ID Assignment Feature
+    else
+    {
+        sqlite3_int64 lastId = sqlite3_last_insert_rowid(db);
+        fine.setFineId(static_cast<int>(lastId));
+    }
     sqlite3_finalize(stmt);
     return success;
 }
@@ -288,7 +293,7 @@ std::vector<Fine> FineRepository::getAllFines()
 }
 
 // ------------------- Save -------------------
-bool FineRepository::save(const Fine &fine)
+bool FineRepository::save(Fine &fine)
 {
     if (fine.getFineId() == 0)
     {

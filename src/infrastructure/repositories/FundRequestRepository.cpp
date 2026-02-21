@@ -15,7 +15,7 @@ FundRequestRepository::FundRequestRepository(sqlite3 *connection)
 FundRequestRepository::~FundRequestRepository() {}
 
 // ------------------- Insert -------------------
-bool FundRequestRepository::insertFundRequest(const FundRequest &request)
+bool FundRequestRepository::insertFundRequest(FundRequest &request)
 {
 
     const char *sql =
@@ -55,7 +55,11 @@ bool FundRequestRepository::insertFundRequest(const FundRequest &request)
         cerr << "Failed to execute INSERT: "
              << sqlite3_errmsg(db) << endl;
     }
-
+    else
+    {
+        sqlite3_int64 lastId = sqlite3_last_insert_rowid(db);
+        request.setRequestId(static_cast<int>(lastId));
+    }
     sqlite3_finalize(stmt);
     return success;
 }
@@ -285,7 +289,7 @@ std::vector<FundRequest> FundRequestRepository::getAllFundRequests()
 }
 
 // ------------------- Save -------------------
-bool FundRequestRepository::save(const FundRequest &request)
+bool FundRequestRepository::save(FundRequest &request)
 {
     if (request.getRequestId() == 0)
     {

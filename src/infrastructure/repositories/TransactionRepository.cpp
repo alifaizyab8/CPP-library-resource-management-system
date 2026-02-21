@@ -65,7 +65,7 @@ bool TransactionRepository::rollbackTransaction()
 }
 
 // ------------------- Insert Transaction -------------------
-bool TransactionRepository::insertTransaction(const Transaction &transaction)
+bool TransactionRepository::insertTransaction(Transaction &transaction)
 {
     const char *sql =
         "INSERT INTO transactions (user_id, resource_id, issue_date, due_date, return_date, "
@@ -97,8 +97,14 @@ bool TransactionRepository::insertTransaction(const Transaction &transaction)
 
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
     if (!success)
+    {
         cerr << "Failed to execute INSERT: " << sqlite3_errmsg(db) << endl;
-
+    }
+    else
+    {
+        sqlite3_int64 lastId = sqlite3_last_insert_rowid(db);
+        transaction.setTransactionId(static_cast<int>(lastId));
+    }
     sqlite3_finalize(stmt);
     return success;
 }
@@ -137,7 +143,9 @@ bool TransactionRepository::updateTransaction(const Transaction &transaction)
 
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
     if (!success)
+    {
         cerr << "Failed to execute UPDATE: " << sqlite3_errmsg(db) << endl;
+    }
 
     sqlite3_finalize(stmt);
     return success;
@@ -276,7 +284,7 @@ std::vector<Transaction> TransactionRepository::getByUserId(int userId)
 }
 
 // ------------------- Save Transaction -------------------
-bool TransactionRepository::save(const Transaction &transaction)
+bool TransactionRepository::save(Transaction &transaction)
 {
 
     if (transaction.getTransactionId() == 0)

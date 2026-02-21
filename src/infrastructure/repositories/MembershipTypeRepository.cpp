@@ -15,7 +15,7 @@ MembershipTypeRepository::MembershipTypeRepository(sqlite3 *connection)
 MembershipTypeRepository::~MembershipTypeRepository() {}
 
 // ------------------- Insert -------------------
-bool MembershipTypeRepository::insertMembershipType(const MembershipType &type)
+bool MembershipTypeRepository::insertMembershipType(MembershipType &type)
 {
 
     const char *sql =
@@ -50,9 +50,15 @@ bool MembershipTypeRepository::insertMembershipType(const MembershipType &type)
 
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
     if (!success)
+    {
         cerr << "Failed to execute INSERT: "
              << sqlite3_errmsg(db) << endl;
-
+    }
+    else
+    {
+        sqlite3_int64 lastId = sqlite3_last_insert_rowid(db);
+        type.setMembershipTypeId(static_cast<int>(lastId));
+    }
     sqlite3_finalize(stmt);
     return success;
 }
@@ -226,7 +232,7 @@ std::vector<MembershipType> MembershipTypeRepository::getAllMembershipTypes()
 }
 
 // ------------------- Save -------------------
-bool MembershipTypeRepository::save(const MembershipType &type)
+bool MembershipTypeRepository::save(MembershipType &type)
 {
     if (type.getMembershipTypeId() == 0)
     {

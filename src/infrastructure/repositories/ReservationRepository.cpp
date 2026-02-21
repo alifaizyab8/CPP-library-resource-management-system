@@ -15,7 +15,7 @@ ReservationRepository::ReservationRepository(sqlite3 *connection)
 ReservationRepository::~ReservationRepository() {}
 
 // ------------------- Insert -------------------
-bool ReservationRepository::insertReservation(const Reservation &reservation)
+bool ReservationRepository::insertReservation(Reservation &reservation)
 {
 
     const char *sql =
@@ -49,7 +49,14 @@ bool ReservationRepository::insertReservation(const Reservation &reservation)
 
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
     if (!success)
+    {
         cerr << "Failed to execute INSERT: " << sqlite3_errmsg(db) << endl;
+    }
+    else
+    {
+        sqlite3_int64 lastId = sqlite3_last_insert_rowid(db);
+        reservation.setReservationId(static_cast<int>(lastId));
+    }
 
     sqlite3_finalize(stmt);
     return success;
@@ -317,7 +324,7 @@ std::vector<Reservation> ReservationRepository::getAllReservations()
 }
 
 // ------------------- Save -------------------
-bool ReservationRepository::save(const Reservation &reservation)
+bool ReservationRepository::save(Reservation &reservation)
 {
     if (reservation.getReservationId() == 0)
     {

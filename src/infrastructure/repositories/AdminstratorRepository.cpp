@@ -15,7 +15,7 @@ AdministratorRepository::AdministratorRepository(sqlite3 *connection)
 AdministratorRepository::~AdministratorRepository() {}
 
 // ------------------- Insert Administrator -------------------
-bool AdministratorRepository::insertAdministrator(const Administrator &admin)
+bool AdministratorRepository::insertAdministrator(Administrator &admin)
 {
 
     const char *sql =
@@ -53,6 +53,12 @@ bool AdministratorRepository::insertAdministrator(const Administrator &admin)
     {
         cerr << "Failed to execute INSERT: "
              << sqlite3_errmsg(db) << endl;
+    }
+    // Same Feature of Auto ID Assignment from Database
+    else
+    {
+        sqlite3_int64 lastId = sqlite3_last_insert_rowid(db);
+        admin.setAdminId(static_cast<int>(lastId));
     }
 
     sqlite3_finalize(stmt);
@@ -236,7 +242,7 @@ std::vector<Administrator> AdministratorRepository::getAllAdministrators()
 }
 
 // ------------------- Save -------------------
-bool AdministratorRepository::save(const Administrator &admin)
+bool AdministratorRepository::save(Administrator &admin)
 {
     if (admin.getAdminId() == 0)
     {

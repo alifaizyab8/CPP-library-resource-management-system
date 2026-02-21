@@ -5,18 +5,19 @@
 
 #include "../../domain/FundRequest.h"
 
-class FundRequestRepository {
+class FundRequestRepository
+{
 private:
-    sqlite3* db;
+    sqlite3 *db;
 
-    bool insertFundRequest(const FundRequest& request);
-    bool updateFundRequest(const FundRequest& request);
+    bool insertFundRequest(FundRequest &request);
+    bool updateFundRequest(const FundRequest &request);
 
 public:
-    explicit FundRequestRepository(sqlite3* connection);
+    explicit FundRequestRepository(sqlite3 *connection);
     ~FundRequestRepository();
 
-    bool save(const FundRequest& request);
+    bool save(FundRequest &request);
     bool deleteFundRequest(int requestId);
 
     std::unique_ptr<FundRequest> getById(int requestId);

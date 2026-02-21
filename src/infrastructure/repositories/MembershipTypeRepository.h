@@ -9,14 +9,14 @@ class MembershipTypeRepository {
 private:
     sqlite3* db;
 
-    bool insertMembershipType(const MembershipType& type);
+    bool insertMembershipType( MembershipType& type);
     bool updateMembershipType(const MembershipType& type);
 
 public:
     explicit MembershipTypeRepository(sqlite3* connection);
     ~MembershipTypeRepository();
 
-    bool save(const MembershipType& type);
+    bool save(MembershipType& type);
     bool deleteMembershipType(int typeId);
 
     std::unique_ptr<MembershipType> getById(int typeId);

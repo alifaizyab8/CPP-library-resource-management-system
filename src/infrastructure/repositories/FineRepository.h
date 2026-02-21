@@ -9,14 +9,14 @@ class FineRepository {
 private:
     sqlite3* db;
 
-    bool insertFine(const Fine& fine);
+    bool insertFine(Fine& fine);
     bool updateFine(const Fine& fine);
 
 public:
     explicit FineRepository(sqlite3* connection);
     ~FineRepository();
 
-    bool save(const Fine& fine);
+    bool save(Fine& fine);
     bool deleteFine(int fineId);
 
     std::unique_ptr<Fine> getById(int fineId);
