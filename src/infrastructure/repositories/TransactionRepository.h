@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include "../../domain/entities/Transaction.h"
-#include "../../infrastructure/repositories/TransactionRepository.h"
 #include "../database/SqliteConnection.h"
 
 class TransactionRepository {
