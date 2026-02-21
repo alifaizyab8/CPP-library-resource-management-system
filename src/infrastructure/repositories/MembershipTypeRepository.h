@@ -19,6 +19,6 @@ public:
     bool save(const MembershipType& type);
     bool deleteMembershipType(int typeId);
 
-    MembershipType* getById(int typeId);
+    std::unique_ptr<MembershipType> getById(int typeId);
     std::vector<MembershipType> getAllMembershipTypes();
 };

@@ -19,6 +19,6 @@ public:
     bool save(const Administrator& admin);
     bool deleteAdministrator(int adminId);
 
-    Administrator* getById(int adminId);
+    std::unique_ptr<Administrator> getById(int adminId);
     std::vector<Administrator> getAllAdministrators();
 };

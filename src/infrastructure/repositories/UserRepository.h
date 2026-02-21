@@ -19,7 +19,7 @@ public:
     bool save(const User& user);
     bool deleteUser(int userId);
 
-    User* getById(int userId);
-    User* getByUsername(const std::string& username);
+    std::unique_ptr<User> getById(int userId);
+    std::unique_ptr<User> getByUsername(const std::string& username);
     std::vector<User> getAllUsers();
 };

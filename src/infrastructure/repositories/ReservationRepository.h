@@ -19,7 +19,7 @@ public:
     bool save(const Reservation& reservation);
     bool deleteReservation(int reservationId);
 
-    Reservation* getById(int reservationId);
+    std::unique_ptr<Reservation> getById(int reservationId);
     std::vector<Reservation> getByUserId(int userId);
     std::vector<Reservation> getByResourceId(int resourceId);
     std::vector<Reservation> getAllReservations();

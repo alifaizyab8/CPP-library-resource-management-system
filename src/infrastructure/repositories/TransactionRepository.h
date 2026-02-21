@@ -23,7 +23,7 @@ public:
     bool updateTransaction(const Transaction& transaction);
     bool deleteTransaction(int transactionId);
 
-    Transaction* getById(int transactionId);
+    std::unique_ptr<Transaction> getById(int transactionId);
     std::vector<Transaction> getByUserId(int userId);
     std::vector<Transaction> getAllTransactions();
 

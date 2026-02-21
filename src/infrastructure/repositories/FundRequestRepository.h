@@ -19,7 +19,7 @@ public:
     bool save(const FundRequest& request);
     bool deleteFundRequest(int requestId);
 
-    FundRequest* getById(int requestId);
+    std::unique_ptr<FundRequest> getById(int requestId);
     std::vector<FundRequest> getByUserId(int userId);
     std::vector<FundRequest> getAllFundRequests();
 };

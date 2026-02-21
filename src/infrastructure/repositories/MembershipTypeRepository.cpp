@@ -1,11 +1,12 @@
 #include "MembershipTypeRepository.h"
 #include <sqlite3.h>
 #include <iostream>
+#include <memory>
 
 using namespace std;
 
 // Constructor
-MembershipTypeRepository::MembershipTypeRepository(sqlite3* connection)
+MembershipTypeRepository::MembershipTypeRepository(sqlite3 *connection)
     : db(connection)
 {
 }
@@ -13,20 +14,21 @@ MembershipTypeRepository::MembershipTypeRepository(sqlite3* connection)
 // Destructor
 MembershipTypeRepository::~MembershipTypeRepository() {}
 
-
 // ------------------- Insert -------------------
-bool MembershipTypeRepository::insertMembershipType(const MembershipType& type) {
+bool MembershipTypeRepository::insertMembershipType(const MembershipType &type)
+{
 
-    const char* sql =
+    const char *sql =
         "INSERT INTO membership_types "
         "(membership_name, duration_days, price, "
         "max_borrowing_limit, borrowing_duration_days, "
         "fine_per_day, description) "
         "VALUES (?, ?, ?, ?, ?, ?, ?);";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare INSERT: " << sqlite3_errmsg(db) << endl;
         return false;
     }
@@ -37,7 +39,8 @@ bool MembershipTypeRepository::insertMembershipType(const MembershipType& type) 
         sqlite3_bind_int(stmt, 4, type.getMaxBorrowingLimit()) != SQLITE_OK ||
         sqlite3_bind_int(stmt, 5, type.getBorrowingDurationDays()) != SQLITE_OK ||
         sqlite3_bind_double(stmt, 6, type.getFinePerDay()) != SQLITE_OK ||
-        sqlite3_bind_text(stmt, 7, type.getDescription().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK) {
+        sqlite3_bind_text(stmt, 7, type.getDescription().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK)
+    {
 
         cerr << "Failed to bind parameters for INSERT: "
              << sqlite3_errmsg(db) << endl;
@@ -54,20 +57,21 @@ bool MembershipTypeRepository::insertMembershipType(const MembershipType& type) 
     return success;
 }
 
-
 // ------------------- Update -------------------
-bool MembershipTypeRepository::updateMembershipType(const MembershipType& type) {
+bool MembershipTypeRepository::updateMembershipType(const MembershipType &type)
+{
 
-    const char* sql =
+    const char *sql =
         "UPDATE membership_types SET "
         "membership_name=?, duration_days=?, price=?, "
         "max_borrowing_limit=?, borrowing_duration_days=?, "
         "fine_per_day=?, description=? "
         "WHERE membership_type_id=?;";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare UPDATE: " << sqlite3_errmsg(db) << endl;
         return false;
     }
@@ -79,7 +83,8 @@ bool MembershipTypeRepository::updateMembershipType(const MembershipType& type) 
         sqlite3_bind_int(stmt, 5, type.getBorrowingDurationDays()) != SQLITE_OK ||
         sqlite3_bind_double(stmt, 6, type.getFinePerDay()) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 7, type.getDescription().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
-        sqlite3_bind_int(stmt, 8, type.getMembershipTypeId()) != SQLITE_OK) {
+        sqlite3_bind_int(stmt, 8, type.getMembershipTypeId()) != SQLITE_OK)
+    {
 
         cerr << "Failed to bind parameters for UPDATE: "
              << sqlite3_errmsg(db) << endl;
@@ -96,21 +101,27 @@ bool MembershipTypeRepository::updateMembershipType(const MembershipType& type) 
     return success;
 }
 
-
 // ------------------- Delete -------------------
-bool MembershipTypeRepository::deleteMembershipType(int typeId) {
+bool MembershipTypeRepository::deleteMembershipType(int typeId)
+{
 
-    const char* sql =
+    const char *sql =
         "DELETE FROM membership_types WHERE membership_type_id=?;";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare DELETE: " << sqlite3_errmsg(db) << endl;
         return false;
     }
 
-    sqlite3_bind_int(stmt, 1, typeId);
+    if (sqlite3_bind_int(stmt, 1, typeId) != SQLITE_OK)
+    {
+        cerr << "Failed to bind typeId for DELETE: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        return false;
+    }
 
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
     if (!success)
@@ -121,34 +132,42 @@ bool MembershipTypeRepository::deleteMembershipType(int typeId) {
     return success;
 }
 
-
 // ------------------- Get By ID -------------------
-MembershipType* MembershipTypeRepository::getById(int typeId) {
+std::unique_ptr<MembershipType> MembershipTypeRepository::getById(int typeId)
+{
 
-    const char* sql =
+    const char *sql =
         "SELECT membership_type_id, membership_name, duration_days, price, "
         "max_borrowing_limit, borrowing_duration_days, "
         "fine_per_day, description "
         "FROM membership_types WHERE membership_type_id=?;";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare SELECT: " << sqlite3_errmsg(db) << endl;
         return nullptr;
     }
 
-    sqlite3_bind_int(stmt, 1, typeId);
+    if (sqlite3_bind_int(stmt, 1, typeId) != SQLITE_OK)
+    {
+        cerr << "Failed to bind typeId in SELECT: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        return nullptr;
+    }
 
-    auto safeText = [](sqlite3_stmt* stmt, int col) -> string {
-        const unsigned char* text = sqlite3_column_text(stmt, col);
-        return text ? reinterpret_cast<const char*>(text) : "";
+    auto safeText = [](sqlite3_stmt *stmt, int col) -> string
+    {
+        const unsigned char *text = sqlite3_column_text(stmt, col);
+        return text ? reinterpret_cast<const char *>(text) : "";
     };
 
-    MembershipType* type = nullptr;
+    std::unique_ptr<MembershipType> type = nullptr;
 
-    if (sqlite3_step(stmt) == SQLITE_ROW) {
-        type = new MembershipType(
+    if (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        type = std::make_unique<MembershipType>(
             sqlite3_column_int(stmt, 0),
             safeText(stmt, 1),
             sqlite3_column_int(stmt, 2),
@@ -156,39 +175,41 @@ MembershipType* MembershipTypeRepository::getById(int typeId) {
             sqlite3_column_int(stmt, 4),
             sqlite3_column_int(stmt, 5),
             sqlite3_column_double(stmt, 6),
-            safeText(stmt, 7)
-        );
+            safeText(stmt, 7));
     }
 
     sqlite3_finalize(stmt);
     return type;
 }
 
-
 // ------------------- Get All -------------------
-std::vector<MembershipType> MembershipTypeRepository::getAllMembershipTypes() {
+std::vector<MembershipType> MembershipTypeRepository::getAllMembershipTypes()
+{
 
     std::vector<MembershipType> types;
 
-    const char* sql =
+    const char *sql =
         "SELECT membership_type_id, membership_name, duration_days, price, "
         "max_borrowing_limit, borrowing_duration_days, "
         "fine_per_day, description FROM membership_types;";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare SELECT ALL: "
              << sqlite3_errmsg(db) << endl;
         return types;
     }
 
-    auto safeText = [](sqlite3_stmt* stmt, int col) -> string {
-        const unsigned char* text = sqlite3_column_text(stmt, col);
-        return text ? reinterpret_cast<const char*>(text) : "";
+    auto safeText = [](sqlite3_stmt *stmt, int col) -> string
+    {
+        const unsigned char *text = sqlite3_column_text(stmt, col);
+        return text ? reinterpret_cast<const char *>(text) : "";
     };
 
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
         types.emplace_back(
             sqlite3_column_int(stmt, 0),
             safeText(stmt, 1),
@@ -197,18 +218,18 @@ std::vector<MembershipType> MembershipTypeRepository::getAllMembershipTypes() {
             sqlite3_column_int(stmt, 4),
             sqlite3_column_int(stmt, 5),
             sqlite3_column_double(stmt, 6),
-            safeText(stmt, 7)
-        );
+            safeText(stmt, 7));
     }
 
     sqlite3_finalize(stmt);
     return types;
 }
 
-
 // ------------------- Save -------------------
-bool MembershipTypeRepository::save(const MembershipType& type) {
-    if (type.getMembershipTypeId() == 0) {
+bool MembershipTypeRepository::save(const MembershipType &type)
+{
+    if (type.getMembershipTypeId() == 0)
+    {
         return insertMembershipType(type);
     }
     return updateMembershipType(type);

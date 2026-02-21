@@ -1,11 +1,12 @@
 #include "AdministratorRepository.h"
 #include <sqlite3.h>
 #include <iostream>
+#include <memory>
 
 using namespace std;
 
 // Constructor
-AdministratorRepository::AdministratorRepository(sqlite3* connection)
+AdministratorRepository::AdministratorRepository(sqlite3 *connection)
     : db(connection)
 {
 }
@@ -14,16 +15,18 @@ AdministratorRepository::AdministratorRepository(sqlite3* connection)
 AdministratorRepository::~AdministratorRepository() {}
 
 // ------------------- Insert Administrator -------------------
-bool AdministratorRepository::insertAdministrator(const Administrator& admin) {
+bool AdministratorRepository::insertAdministrator(const Administrator &admin)
+{
 
-    const char* sql =
+    const char *sql =
         "INSERT INTO administrators "
         "(username, password, first_name, last_name, email, created_date, is_active) "
         "VALUES (?, ?, ?, ?, ?, ?, ?);";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare INSERT statement: "
              << sqlite3_errmsg(db) << endl;
         return false;
@@ -35,7 +38,8 @@ bool AdministratorRepository::insertAdministrator(const Administrator& admin) {
         sqlite3_bind_text(stmt, 4, admin.getLastName().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 5, admin.getEmail().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 6, admin.getCreatedDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
-        sqlite3_bind_int(stmt, 7, admin.getIsActive() ? 1 : 0) != SQLITE_OK) {
+        sqlite3_bind_int(stmt, 7, admin.getIsActive() ? 1 : 0) != SQLITE_OK)
+    {
 
         cerr << "Failed to bind parameters for INSERT: "
              << sqlite3_errmsg(db) << endl;
@@ -45,7 +49,8 @@ bool AdministratorRepository::insertAdministrator(const Administrator& admin) {
 
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
 
-    if (!success) {
+    if (!success)
+    {
         cerr << "Failed to execute INSERT: "
              << sqlite3_errmsg(db) << endl;
     }
@@ -55,17 +60,19 @@ bool AdministratorRepository::insertAdministrator(const Administrator& admin) {
 }
 
 // ------------------- Update Administrator -------------------
-bool AdministratorRepository::updateAdministrator(const Administrator& admin) {
+bool AdministratorRepository::updateAdministrator(const Administrator &admin)
+{
 
-    const char* sql =
+    const char *sql =
         "UPDATE administrators SET "
         "username=?, password=?, first_name=?, last_name=?, "
         "email=?, created_date=?, is_active=? "
         "WHERE admin_id=?;";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare UPDATE statement: "
              << sqlite3_errmsg(db) << endl;
         return false;
@@ -78,7 +85,8 @@ bool AdministratorRepository::updateAdministrator(const Administrator& admin) {
         sqlite3_bind_text(stmt, 5, admin.getEmail().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 6, admin.getCreatedDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_int(stmt, 7, admin.getIsActive() ? 1 : 0) != SQLITE_OK ||
-        sqlite3_bind_int(stmt, 8, admin.getAdminId()) != SQLITE_OK) {
+        sqlite3_bind_int(stmt, 8, admin.getAdminId()) != SQLITE_OK)
+    {
 
         cerr << "Failed to bind parameters for UPDATE: "
              << sqlite3_errmsg(db) << endl;
@@ -88,7 +96,8 @@ bool AdministratorRepository::updateAdministrator(const Administrator& admin) {
 
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
 
-    if (!success) {
+    if (!success)
+    {
         cerr << "Failed to execute UPDATE: "
              << sqlite3_errmsg(db) << endl;
     }
@@ -98,20 +107,23 @@ bool AdministratorRepository::updateAdministrator(const Administrator& admin) {
 }
 
 // ------------------- Delete Administrator -------------------
-bool AdministratorRepository::deleteAdministrator(int adminId) {
+bool AdministratorRepository::deleteAdministrator(int adminId)
+{
 
-    const char* sql =
+    const char *sql =
         "DELETE FROM administrators WHERE admin_id=?;";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare DELETE statement: "
              << sqlite3_errmsg(db) << endl;
         return false;
     }
 
-    if (sqlite3_bind_int(stmt, 1, adminId) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, 1, adminId) != SQLITE_OK)
+    {
         cerr << "Failed to bind adminId for DELETE: "
              << sqlite3_errmsg(db) << endl;
         sqlite3_finalize(stmt);
@@ -120,7 +132,8 @@ bool AdministratorRepository::deleteAdministrator(int adminId) {
 
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
 
-    if (!success) {
+    if (!success)
+    {
         cerr << "Failed to execute DELETE: "
              << sqlite3_errmsg(db) << endl;
     }
@@ -130,37 +143,42 @@ bool AdministratorRepository::deleteAdministrator(int adminId) {
 }
 
 // ------------------- Get By ID -------------------
-Administrator* AdministratorRepository::getById(int adminId) {
+std::unique_ptr<Administrator> AdministratorRepository::getById(int adminId)
+{
 
-    const char* sql =
+    const char *sql =
         "SELECT admin_id, username, password, first_name, last_name, "
         "email, created_date, is_active "
         "FROM administrators WHERE admin_id=?;";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare SELECT statement: "
              << sqlite3_errmsg(db) << endl;
         return nullptr;
     }
 
-    if (sqlite3_bind_int(stmt, 1, adminId) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, 1, adminId) != SQLITE_OK)
+    {
         cerr << "Failed to bind adminId in SELECT: "
              << sqlite3_errmsg(db) << endl;
         sqlite3_finalize(stmt);
         return nullptr;
     }
 
-    auto safeText = [](sqlite3_stmt* stmt, int col) -> string {
-        const unsigned char* text = sqlite3_column_text(stmt, col);
-        return text ? reinterpret_cast<const char*>(text) : "";
+    auto safeText = [](sqlite3_stmt *stmt, int col) -> string
+    {
+        const unsigned char *text = sqlite3_column_text(stmt, col);
+        return text ? reinterpret_cast<const char *>(text) : "";
     };
 
-    Administrator* admin = nullptr;
+    std::unique_ptr<Administrator> admin = nullptr;
 
-    if (sqlite3_step(stmt) == SQLITE_ROW) {
-        admin = new Administrator(
+    if (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        admin = std::make_unique<Administrator>(
             sqlite3_column_int(stmt, 0),
             safeText(stmt, 1),
             safeText(stmt, 2),
@@ -168,8 +186,7 @@ Administrator* AdministratorRepository::getById(int adminId) {
             safeText(stmt, 4),
             safeText(stmt, 5),
             safeText(stmt, 6),
-            sqlite3_column_int(stmt, 7) == 1
-        );
+            sqlite3_column_int(stmt, 7) == 1);
     }
 
     sqlite3_finalize(stmt);
@@ -177,28 +194,32 @@ Administrator* AdministratorRepository::getById(int adminId) {
 }
 
 // ------------------- Get All Administrators -------------------
-std::vector<Administrator> AdministratorRepository::getAllAdministrators() {
+std::vector<Administrator> AdministratorRepository::getAllAdministrators()
+{
 
     std::vector<Administrator> admins;
 
-    const char* sql =
+    const char *sql =
         "SELECT admin_id, username, password, first_name, last_name, "
         "email, created_date, is_active FROM administrators;";
 
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt *stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
         cerr << "Failed to prepare SELECT ALL statement: "
              << sqlite3_errmsg(db) << endl;
         return admins;
     }
 
-    auto safeText = [](sqlite3_stmt* stmt, int col) -> string {
-        const unsigned char* text = sqlite3_column_text(stmt, col);
-        return text ? reinterpret_cast<const char*>(text) : "";
+    auto safeText = [](sqlite3_stmt *stmt, int col) -> string
+    {
+        const unsigned char *text = sqlite3_column_text(stmt, col);
+        return text ? reinterpret_cast<const char *>(text) : "";
     };
 
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
         admins.emplace_back(
             sqlite3_column_int(stmt, 0),
             safeText(stmt, 1),
@@ -207,8 +228,7 @@ std::vector<Administrator> AdministratorRepository::getAllAdministrators() {
             safeText(stmt, 4),
             safeText(stmt, 5),
             safeText(stmt, 6),
-            sqlite3_column_int(stmt, 7) == 1
-        );
+            sqlite3_column_int(stmt, 7) == 1);
     }
 
     sqlite3_finalize(stmt);
@@ -216,8 +236,10 @@ std::vector<Administrator> AdministratorRepository::getAllAdministrators() {
 }
 
 // ------------------- Save -------------------
-bool AdministratorRepository::save(const Administrator& admin) {
-    if (admin.getAdminId() == 0) {
+bool AdministratorRepository::save(const Administrator &admin)
+{
+    if (admin.getAdminId() == 0)
+    {
         return insertAdministrator(admin);
     }
     return updateAdministrator(admin);

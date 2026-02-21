@@ -19,7 +19,7 @@ public:
     bool save(const Fine& fine);
     bool deleteFine(int fineId);
 
-    Fine* getById(int fineId);
+    std::unique_ptr<Fine> getById(int fineId);
     std::vector<Fine> getByUserId(int userId);
     std::vector<Fine> getAllFines();
 };
