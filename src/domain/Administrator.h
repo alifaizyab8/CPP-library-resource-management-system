@@ -27,5 +27,8 @@ public:
     std::string getEmail() const { return email; }
     std::string getCreatedDate() const { return createdDate; }
     bool getIsActive() const { return isActive; }
-    void setAdminId(int id);
+    void setAdminId(int id)
+    {
+        adminId = id;
+    }
 };
