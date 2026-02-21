@@ -11,7 +11,7 @@ class UserRepository
 {
     private:
     sqlite3 *&db; // uses existing database -> Dependency Injection
-     std::string getSafeText(sqlite3_stmt* stmt, int col);
+    std::string getSafeText(sqlite3_stmt* stmt, int col);
 
 public:
     UserRepository(sqlite3 *connection);
