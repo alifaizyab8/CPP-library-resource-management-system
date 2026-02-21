@@ -44,21 +44,21 @@ sqlite3 *DatabaseInitializer::getConnection()
 
 bool DatabaseInitializer::createTables()
 {
-    const char *userTable =
-        "CREATE TABLE IF NOT EXISTS users ("
-        "user_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "username TEXT,"
-        "password TEXT,"
-        "first_name TEXT,"
-        "last_name TEXT,"
-        "email TEXT,"
-        "address TEXT,"
-        "phone TEXT,"
-        "balance REAL,"
-        "membership_type_id INTEGER,"
-        "registration_date TEXT,"
-        "is_active INTEGER"
-        ");";
+    const char* userTable =
+    "CREATE TABLE IF NOT EXISTS users ("
+    "user_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+    "username TEXT NOT NULL UNIQUE,"
+    "password TEXT NOT NULL,"
+    "first_name TEXT NOT NULL,"
+    "last_name TEXT NOT NULL,"
+    "email TEXT NOT NULL UNIQUE,"
+    "address TEXT NOT NULL,"
+    "phone TEXT NOT NULL,"
+    "balance REAL NOT NULL DEFAULT 0.0,"
+    "membership_type_id INTEGER NOT NULL,"
+    "registration_date TEXT NOT NULL,"
+    "is_active INTEGER NOT NULL DEFAULT 1"
+    ");";
 
     const char *transactionTable =
         "CREATE TABLE IF NOT EXISTS transactions ("
@@ -96,6 +96,40 @@ bool DatabaseInitializer::createTables()
         "created_date TEXT NOT NULL,"
         "is_active INTEGER NOT NULL DEFAULT 1"
         ");";
+    const char *fundRequestsTable =
+        "CREATE TABLE IF NOT EXISTS fund_requests ("
+        "request_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "user_id INTEGER NOT NULL,"
+        "requested_amount REAL NOT NULL,"
+        "request_date TEXT NOT NULL,"
+        "status TEXT NOT NULL,"
+        "admin_id INTEGER DEFAULT 0,"
+        "approval_date TEXT,"
+        "admin_notes TEXT"
+        ");";
+        const char* membershipTypesTable =
+    "CREATE TABLE IF NOT EXISTS membership_types ("
+    "membership_type_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+    "membership_name TEXT NOT NULL UNIQUE,"
+    "duration_days INTEGER NOT NULL,"
+    "price REAL NOT NULL,"
+    "max_borrowing_limit INTEGER NOT NULL DEFAULT 2,"
+    "borrowing_duration_days INTEGER NOT NULL DEFAULT 14,"
+    "fine_per_day REAL NOT NULL DEFAULT 5.00,"
+    "description TEXT"
+    ");";
+
+    const char* reservationsTable =
+    "CREATE TABLE IF NOT EXISTS reservations ("
+    "reservation_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+    "user_id INTEGER NOT NULL,"
+    "resource_id INTEGER NOT NULL,"
+    "reservation_date TEXT NOT NULL,"
+    "expiry_date TEXT NOT NULL,"
+    "is_fulfilled INTEGER NOT NULL DEFAULT 0,"
+    "is_cancelled INTEGER NOT NULL DEFAULT 0,"
+    "status TEXT NOT NULL DEFAULT 'PENDING'"
+    ");";
 
     char *errMsg = nullptr;
 
@@ -124,6 +158,25 @@ bool DatabaseInitializer::createTables()
         sqlite3_free(errMsg);
         return false;
     }
+    if (sqlite3_exec(db, fundRequestsTable, nullptr, nullptr, &errMsg) != SQLITE_OK)
+    {
+        std::cerr << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return false;
+    }
+    if (sqlite3_exec(db, membershipTypesTable, nullptr, nullptr, &errMsg) != SQLITE_OK)
+    {
+        std::cerr << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return false;
+    }
+    if (sqlite3_exec(db, reservationsTable, nullptr, nullptr, &errMsg) != SQLITE_OK)
+    {
+        std::cerr << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return false;
+    }
+    
 
     return true;
 }
