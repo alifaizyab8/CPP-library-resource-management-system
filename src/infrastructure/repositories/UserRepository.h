@@ -9,14 +9,14 @@ class UserRepository {
 private:
     sqlite3* db;
 
-    bool insertUser(const User& user);
+    bool insertUser(User& user);
     bool updateUser(const User& user);
 
 public:
     explicit UserRepository(sqlite3* connection);
     ~UserRepository();
 
-    bool save(const User& user);
+    bool save(User& user);
     bool deleteUser(int userId);
 
     std::unique_ptr<User> getById(int userId);

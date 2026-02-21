@@ -15,7 +15,7 @@ UserRepository::UserRepository(sqlite3 *connection)
 UserRepository::~UserRepository() {}
 
 // ------------------- Insert User -------------------
-bool UserRepository::insertUser(const User &user)
+bool UserRepository::insertUser(User &user)
 {
 
     const char *sql =
@@ -53,7 +53,12 @@ bool UserRepository::insertUser(const User &user)
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
     if (!success)
         cerr << "Failed to execute INSERT: " << sqlite3_errmsg(db) << endl;
-
+    else
+    {
+        // This function takes the Auto Generated ID from the database and assigns it back to the object
+        sqlite3_int64 lastId = sqlite3_last_insert_rowid(db);
+        user.setUserId(static_cast<int>(lastId));
+    }
     sqlite3_finalize(stmt);
     return success;
 }
@@ -285,7 +290,7 @@ std::vector<User> UserRepository::getAllUsers()
 }
 
 // ------------------- Save -------------------
-bool UserRepository::save(const User &user)
+bool UserRepository::save(User &user)
 {
     if (user.getUserId() == 0)
     {
