@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "../../domain/entities/Reservation.h"
+#include "../../domain/Reservation.h"
 
 class ReservationRepository {
 private:

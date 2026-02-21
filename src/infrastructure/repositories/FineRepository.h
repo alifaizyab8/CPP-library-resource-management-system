@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "../../domain/entities/Fine.h"
+#include "../../domain/Fine.h"
 
 class FineRepository {
 private:

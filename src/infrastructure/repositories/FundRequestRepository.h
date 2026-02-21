@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "../../domain/entities/FundRequest.h"
+#include "../../domain/FundRequest.h"
 
 class FundRequestRepository {
 private:

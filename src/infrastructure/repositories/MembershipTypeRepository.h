@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "../../domain/entities/MembershipType.h"
+#include "../../domain/MembershipType.h"
 
 class MembershipTypeRepository {
 private:

@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "../../domain/entities/User.h"
+#include "../../domain/User.h"
 
 class UserRepository {
 private:
