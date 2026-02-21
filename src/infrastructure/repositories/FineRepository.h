@@ -2,7 +2,7 @@
 #include <sqlite3.h>
 #include <vector>
 #include <string>
-
+#include <memory>
 #include "../../domain/Fine.h"
 
 class FineRepository {

@@ -1,15 +1,9 @@
 #include <iostream>
-#include "infrastructure/database/SqliteConnection.h"
-#include "infrastructure/repositories/UserRepository.h"
-#include "domain/entities/User.h"
-#include <vector>
-#include <string>
-
 using namespace std;
 
 int main()
 {
-    cout<<"Please work";
+    cout << "It Works";
     return 0;
 }
 // { //statement for test

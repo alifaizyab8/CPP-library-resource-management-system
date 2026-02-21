@@ -4,7 +4,7 @@
 #include <string>
 #include "../../domain/Transaction.h"
 #include "../database/SqliteConnection.h"
-
+#include <memory>
 class TransactionRepository
 {
 private:
