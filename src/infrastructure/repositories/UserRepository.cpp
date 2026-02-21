@@ -187,7 +187,7 @@ std::vector<User> UserRepository::getAllUsers()
     {
         int step = sqlite3_step(stmt);
         if (step == SQLITE_ROW) {
-            users.emplace_back(
+            users.emplace_back( // -> using this to construct object directly in vectors
                 sqlite3_column_int(stmt, 0),
                 getSafeText(stmt, 1),
                 getSafeText(stmt, 2),
