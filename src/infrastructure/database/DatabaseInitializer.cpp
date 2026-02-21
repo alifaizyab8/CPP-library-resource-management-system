@@ -41,3 +41,55 @@ sqlite3 *DatabaseInitializer::getConnection()
 {
     return db;
 }
+
+bool DatabaseInitializer::createTables()
+{
+    const char *userTable =
+        "CREATE TABLE IF NOT EXISTS users ("
+        "user_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "username TEXT,"
+        "password TEXT,"
+        "first_name TEXT,"
+        "last_name TEXT,"
+        "email TEXT,"
+        "address TEXT,"
+        "phone TEXT,"
+        "balance REAL,"
+        "membership_type_id INTEGER,"
+        "registration_date TEXT,"
+        "is_active INTEGER"
+        ");";
+
+    const char *transactionTable =
+        "CREATE TABLE IF NOT EXISTS transactions ("
+        "transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "user_id INTEGER,"
+        "resource_id INTEGER,"
+        "issue_date TEXT,"
+        "due_date TEXT,"
+        "return_date TEXT,"
+        "fine_amount REAL,"
+        "is_returned INTEGER,"
+        "is_overdue INTEGER,"
+        "renewal_count INTEGER,"
+        "transaction_status TEXT"
+        ");";
+
+    char *errMsg = nullptr;
+
+    if (sqlite3_exec(db, userTable, nullptr, nullptr, &errMsg) != SQLITE_OK)
+    {
+        std::cerr << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return false;
+    }
+
+    if (sqlite3_exec(db, transactionTable, nullptr, nullptr, &errMsg) != SQLITE_OK)
+    {
+        std::cerr << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return false;
+    }
+
+    return true;
+}

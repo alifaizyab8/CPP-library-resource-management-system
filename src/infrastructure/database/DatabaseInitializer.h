@@ -9,7 +9,7 @@ class DatabaseInitializer
 {
 private:
     sqlite3 *db;        // -> points to the database connection.
-    std::string dbFile; // -> tores file name.
+    std::string dbFile; // -> stores file name.
 
 public:
     // Constructor.
