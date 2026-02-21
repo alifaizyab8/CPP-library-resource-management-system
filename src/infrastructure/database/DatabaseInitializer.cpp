@@ -74,6 +74,28 @@ bool DatabaseInitializer::createTables()
         "renewal_count INTEGER,"
         "transaction_status TEXT"
         ");";
+    const char *fineTable =
+        "CREATE TABLE IF NOT EXISTS fines ("
+        "fine_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "transaction_id INTEGER NOT NULL,"
+        "user_id INTEGER NOT NULL,"
+        "days_overdue INTEGER NOT NULL,"
+        "fine_amount REAL NOT NULL,"
+        "fine_date TEXT NOT NULL,"
+        "is_paid INTEGER NOT NULL DEFAULT 0,"
+        "payment_date TEXT"
+        ");";
+    const char *administratorTable =
+        "CREATE TABLE IF NOT EXISTS administrators ("
+        "admin_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "username TEXT NOT NULL UNIQUE,"
+        "password TEXT NOT NULL,"
+        "first_name TEXT NOT NULL,"
+        "last_name TEXT NOT NULL,"
+        "email TEXT NOT NULL UNIQUE,"
+        "created_date TEXT NOT NULL,"
+        "is_active INTEGER NOT NULL DEFAULT 1"
+        ");";
 
     char *errMsg = nullptr;
 
@@ -85,6 +107,18 @@ bool DatabaseInitializer::createTables()
     }
 
     if (sqlite3_exec(db, transactionTable, nullptr, nullptr, &errMsg) != SQLITE_OK)
+    {
+        std::cerr << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return false;
+    }
+    if (sqlite3_exec(db, administratorTable, nullptr, nullptr, &errMsg) != SQLITE_OK)
+    {
+        std::cerr << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return false;
+    }
+    if (sqlite3_exec(db, fineTable, nullptr, nullptr, &errMsg) != SQLITE_OK)
     {
         std::cerr << errMsg << std::endl;
         sqlite3_free(errMsg);
