@@ -1,9 +1,53 @@
 #include <iostream>
+#include <sqlite3.h>
+
 using namespace std;
+
+// Forward declarations
+bool testAdministratorRepository(sqlite3 *db);
+bool testFineRepository(sqlite3 *db);
+bool testFundRequestRepository(sqlite3 *db);
+bool testMembershipTypeRepository(sqlite3 *db);
+bool testReservationRepository(sqlite3 *db);
+bool testTransactionRepository(sqlite3 *db);
+bool testUserRepository(sqlite3 *db);
 
 int main()
 {
-    cout << "It Works";
+    sqlite3 *db;
+
+    // Open the blank RAM database
+    if (sqlite3_open(":memory:", &db) != SQLITE_OK)
+    {
+        std::cerr << "Cannot open memory database: " << sqlite3_errmsg(db) << std::endl;
+        return 1;
+    }
+
+    cout << "========== RUNNING TEST SUITE ==========" << endl;
+
+    // Run tests one by one
+    bool adminPassed = testAdministratorRepository(db);
+    bool finePassed = testFineRepository(db);
+    bool fundPassed = testFundRequestRepository(db);
+    bool membershipPassed = testMembershipTypeRepository(db);
+    bool reservationPassed = testReservationRepository(db);
+    bool transactionPassed = testTransactionRepository(db);
+    bool userPassed = testUserRepository(db);
+
+
+    cout << "========================================" << endl;
+
+    // Final Report
+    if (adminPassed && finePassed && fundPassed && membershipPassed && reservationPassed && transactionPassed && userPassed)
+    {
+        cout << " SUCCESS: All tested repositories are perfectly bug-free!" << endl;
+    }
+    else
+    {
+        cout << " WARNING: One or more repositories failed." << endl;
+    }
+
+    sqlite3_close(db);
     return 0;
 }
 // { //statement for test
