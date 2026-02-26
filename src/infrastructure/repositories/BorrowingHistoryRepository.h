@@ -2,7 +2,7 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include "sqlite3.h"
+#include <sqlite3.h>
 #include "../../domain/BorrowingHistory.h"
 
 class BorrowingHistoryRepository {
