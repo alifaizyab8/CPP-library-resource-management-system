@@ -59,7 +59,7 @@ for author in "${ranked_authors[@]}"; do
         1) medal="🥇" ;;
         2) medal="🥈" ;;
         3) medal="🥉" ;;
-        *) medal="🏆" ;;
+        4) medal="🏆" ;;
     esac
     
     printf "%-5s %-15s %-10s %-12s %-12s %-15s\n" "$medal#$rank" "$author" "$commits" "$insertions" "$deletions" "$percent%"
