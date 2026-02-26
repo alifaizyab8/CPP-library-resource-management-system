@@ -92,7 +92,7 @@ bool DatabaseInitializer::createTables()
         "balance REAL NOT NULL DEFAULT 0.0,"
         "membership_type_id INTEGER NOT NULL,"
         "registration_date TEXT NOT NULL,"
-        "is_active INTEGER NOT NULL DEFAULT 1"
+        "is_active INTEGER NOT NULL DEFAULT 1,"
         "FOREIGN KEY(membership_type_id) REFERENCES membership_types(membership_type_id) ON DELETE RESTRICT"
         ");";
     const char *resourcesTable =
