@@ -201,6 +201,8 @@ bool DatabaseInitializer::createTables()
             fineTable,
             fundRequestsTable,
             reservationsTable,
+            borrowingHistoryTable,
+
         };
     for (const char *table : SQLiteTableQueries)
     {
