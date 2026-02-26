@@ -78,6 +78,8 @@ bool DatabaseInitializer::createTables()
         "is_active INTEGER NOT NULL DEFAULT 1"
         ");";
 
+   
+
     // Now creating Dependent Tables which will use the Primary Keys of the above tables as foreign keys
     const char *userTable =
         "CREATE TABLE IF NOT EXISTS users ("
@@ -166,6 +168,19 @@ bool DatabaseInitializer::createTables()
         "is_fulfilled INTEGER NOT NULL DEFAULT 0,"
         "is_cancelled INTEGER NOT NULL DEFAULT 0,"
         "status TEXT NOT NULL DEFAULT 'PENDING',"
+        "FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,"
+        "FOREIGN KEY(resource_id) REFERENCES resources(resource_id) ON DELETE CASCADE"
+        ");";
+
+    const char *borrowingHistoryTable =
+        "CREATE TABLE IF NOT EXISTS borrowing_history ("
+        "history_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "user_id INTEGER NOT NULL,"
+        "resource_id INTEGER NOT NULL,"
+        "issue_date TEXT NOT NULL,"
+        "due_date TEXT NOT NULL,"
+        "return_date TEXT,"
+        "fine_amount REAL DEFAULT 0.0,"
         "FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,"
         "FOREIGN KEY(resource_id) REFERENCES resources(resource_id) ON DELETE CASCADE"
         ");";
