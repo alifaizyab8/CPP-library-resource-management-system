@@ -1,7 +1,9 @@
 #include "DatabaseInitializer.h"
 #include <iostream>
 
-// Constructor.
+/* *************************************************************************
+                     ---------- CONSTRUCTOR ----------
+   *************************************************************************  */
 DatabaseInitializer::DatabaseInitializer(const std::string &filename)
     : db(nullptr), dbFile(filename)
 {
@@ -16,7 +18,9 @@ DatabaseInitializer::DatabaseInitializer(const std::string &filename)
     sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
 }
 
-// Destructor.
+/* *************************************************************************
+                     ---------- DESTRUCTOR ----------
+   *************************************************************************  */
 DatabaseInitializer::~DatabaseInitializer()
 {
     if (db)
@@ -26,7 +30,9 @@ DatabaseInitializer::~DatabaseInitializer()
     }
 }
 
-// Open database.
+/* *************************************************************************
+                  ---------- OPENING THE DATABASE ----------
+   *************************************************************************  */
 bool DatabaseInitializer::open()
 {
     if (sqlite3_open(dbFile.c_str(), &db) != SQLITE_OK)
@@ -44,10 +50,15 @@ sqlite3 *DatabaseInitializer::getConnection()
     return db;
 }
 
+/* *************************************************************************
+                     ---------- TABLES ----------
+   *************************************************************************  */
 bool DatabaseInitializer::createTables()
 {
     // For Foreign Keys to work, the independent tables must be created first
     // Independent Tables: Those Tables which do not have any foreign key in them
+
+    /*  ---------- Categories Table ---------- */
     const char *categoriesTable =
         "CREATE TABLE IF NOT EXISTS categories ("
         "category_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -55,6 +66,7 @@ bool DatabaseInitializer::createTables()
         "description TEXT"
         ");";
 
+    /*  ---------- Membership Types Table ---------- */
     const char *membershipTypesTable =
         "CREATE TABLE IF NOT EXISTS membership_types ("
         "membership_type_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -66,6 +78,8 @@ bool DatabaseInitializer::createTables()
         "fine_per_day REAL NOT NULL DEFAULT 5.00,"
         "description TEXT"
         ");";
+
+    /*  ---------- Administrator Table ---------- */
     const char *administratorTable =
         "CREATE TABLE IF NOT EXISTS administrators ("
         "admin_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -78,9 +92,9 @@ bool DatabaseInitializer::createTables()
         "is_active INTEGER NOT NULL DEFAULT 1"
         ");";
 
-   
-
     // Now creating Dependent Tables which will use the Primary Keys of the above tables as foreign keys
+
+    /*  ---------- User Table ---------- */
     const char *userTable =
         "CREATE TABLE IF NOT EXISTS users ("
         "user_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -97,6 +111,8 @@ bool DatabaseInitializer::createTables()
         "is_active INTEGER NOT NULL DEFAULT 1,"
         "FOREIGN KEY(membership_type_id) REFERENCES membership_types(membership_type_id) ON DELETE RESTRICT"
         ");";
+
+    /*  ---------- Resources Table ---------- */
     const char *resourcesTable =
         "CREATE TABLE IF NOT EXISTS resources ("
         "resource_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -113,8 +129,9 @@ bool DatabaseInitializer::createTables()
         "added_date TEXT NOT NULL,"
         "is_active INTEGER NOT NULL DEFAULT 1,"
         "FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE RESTRICT,"
-        "FOREIGN KEY(resource_type_id) REFERENCES resource_types(resource_type_id) ON DELETE RESTRICT"
         ");";
+
+    /*  ---------- Transactions Table ---------- */
     const char *transactionTable =
         "CREATE TABLE IF NOT EXISTS transactions ("
         "transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -131,6 +148,8 @@ bool DatabaseInitializer::createTables()
         "FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,"
         "FOREIGN KEY(resource_id) REFERENCES resources(resource_id) ON DELETE CASCADE"
         ");";
+
+    /*  ---------- Fine Table ---------- */
     const char *fineTable =
         "CREATE TABLE IF NOT EXISTS fines ("
         "fine_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -144,6 +163,8 @@ bool DatabaseInitializer::createTables()
         "FOREIGN KEY(transaction_id) REFERENCES transactions(transaction_id) ON DELETE CASCADE,"
         "FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE"
         ");";
+
+    /*  ---------- Fund Requests Table ---------- */
     const char *fundRequestsTable =
         "CREATE TABLE IF NOT EXISTS fund_requests ("
         "request_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -158,6 +179,7 @@ bool DatabaseInitializer::createTables()
         "FOREIGN KEY(admin_id) REFERENCES administrators(admin_id) ON DELETE SET NULL"
         ");";
 
+    /*  ---------- Reservations Table ---------- */
     const char *reservationsTable =
         "CREATE TABLE IF NOT EXISTS reservations ("
         "reservation_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -172,6 +194,7 @@ bool DatabaseInitializer::createTables()
         "FOREIGN KEY(resource_id) REFERENCES resources(resource_id) ON DELETE CASCADE"
         ");";
 
+    /*  ---------- Borrowing History Table ---------- */
     const char *borrowingHistoryTable =
         "CREATE TABLE IF NOT EXISTS borrowing_history ("
         "history_id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -190,6 +213,7 @@ bool DatabaseInitializer::createTables()
 
     char *errMsg = nullptr;
 
+    /*  ---------- SQlite Table Queries ---------- */
     const char *SQLiteTableQueries[] =
         {
             categoriesTable,
@@ -208,7 +232,7 @@ bool DatabaseInitializer::createTables()
     {
         if (sqlite3_exec(db, table, nullptr, nullptr, &errMsg) != SQLITE_OK)
         {
-            std::cerr << "Error creating table: " << errMsg << std::endl;
+            std::cerr << "Error creating table: " << errMsg << std::endl; // error handling
             sqlite3_free(errMsg);
             return false;
         }

@@ -5,18 +5,26 @@
 #include "sqlite3.h"
 #include "../../domain/Resource.h"
 
-class ResourceRepository {
+class ResourceRepository
+{
 private:
-    sqlite3* db;
-    bool insertResource(Resource& resource);
-    bool updateResource(const Resource& resource);
+    sqlite3 *db;
+
+    bool insertResource(Resource &resource);
+
+    bool updateResource(const Resource &resource);
 
 public:
-    explicit ResourceRepository(sqlite3* connection);
+    // Constructor
+    explicit ResourceRepository(sqlite3 *connection);
+    // Destructor
     ~ResourceRepository();
 
-    bool save(Resource& resource);
+    bool save(Resource &resource);
+
     bool deleteResource(int resourceId);
+
     std::unique_ptr<Resource> getById(int resourceId);
+
     std::vector<Resource> getAll();
 };
