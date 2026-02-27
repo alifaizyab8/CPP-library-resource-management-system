@@ -4,12 +4,17 @@
 
 using namespace std;
 
-BorrowingHistoryRepository::BorrowingHistoryRepository(sqlite3 *connection)
-    : db(connection) {}
+/* *************************************************************************
+                 ---------- CONSTRUCTORS & DESTRUCTORS ----------
+   *************************************************************************  */
 
+BorrowingHistoryRepository::BorrowingHistoryRepository(sqlite3 *connection) : db(connection) {}
 BorrowingHistoryRepository::~BorrowingHistoryRepository() {}
 
-// ------------------- Insert -------------------
+/* *************************************************************************
+                ---------- INSERT BORROWING HISTORY ----------
+   *************************************************************************  */
+
 bool BorrowingHistoryRepository::insertHistory(BorrowingHistory &history)
 {
     const char *sql = "INSERT INTO borrowing_history (user_id, resource_id, issue_date, due_date, return_date, fine_amount) "
@@ -37,14 +42,17 @@ bool BorrowingHistoryRepository::insertHistory(BorrowingHistory &history)
     }
     else
     {
-        cerr << "Execution Failed (Check Foreign Keys): " << sqlite3_errmsg(db) << endl;
+        cerr << "Execution Failed! Check Foreign Key!" << sqlite3_errmsg(db) << endl;
     }
 
     sqlite3_finalize(stmt);
     return success;
 }
 
-// ------------------- Update -------------------
+/* *************************************************************************
+                ---------- UPDATE BORROWING HISTORY ----------
+   *************************************************************************  */
+
 bool BorrowingHistoryRepository::updateHistory(const BorrowingHistory &history)
 {
     const char *sql = "UPDATE borrowing_history SET user_id=?, resource_id=?, issue_date=?, due_date=?, "
@@ -67,7 +75,10 @@ bool BorrowingHistoryRepository::updateHistory(const BorrowingHistory &history)
     return success;
 }
 
-// ------------------- Save -------------------
+/* *************************************************************************
+                ---------- SAVE BORROWING HISTORY ----------
+   *************************************************************************  */
+
 bool BorrowingHistoryRepository::save(BorrowingHistory &history)
 {
     if (history.getId() == 0)
@@ -77,7 +88,10 @@ bool BorrowingHistoryRepository::save(BorrowingHistory &history)
     return updateHistory(history);
 }
 
-// ------------------- Delete -------------------
+/* *************************************************************************
+                ---------- DELETE BORROWING HISTORY ----------
+   *************************************************************************  */
+
 bool BorrowingHistoryRepository::deleteHistory(int historyId)
 {
     const char *sql = "DELETE FROM borrowing_history WHERE history_id=?;";
@@ -92,7 +106,10 @@ bool BorrowingHistoryRepository::deleteHistory(int historyId)
     return success;
 }
 
-// ------------------- Get By ID -------------------
+/* *************************************************************************
+                ---------- GET BORROWING HISTORY BY ID's ----------
+   *************************************************************************  */
+
 unique_ptr<BorrowingHistory> BorrowingHistoryRepository::getById(int historyId)
 {
     const char *sql = "SELECT history_id, user_id, resource_id, issue_date, due_date, return_date, fine_amount "
@@ -125,7 +142,10 @@ unique_ptr<BorrowingHistory> BorrowingHistoryRepository::getById(int historyId)
     return history;
 }
 
-// ------------------- Get All -------------------
+/* *************************************************************************
+                ---------- GET ALL BORROWING HISTORY ----------
+   *************************************************************************  */
+
 vector<BorrowingHistory> BorrowingHistoryRepository::getAll()
 {
     vector<BorrowingHistory> results;

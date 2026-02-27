@@ -5,16 +5,17 @@
 
 using namespace std;
 
-// Constructor
-MembershipTypeRepository::MembershipTypeRepository(sqlite3 *connection)
-    : db(connection)
-{
-}
+/* *************************************************************************
+                 ---------- CONSTRUCTORS & DESTRUCTORS ----------
+   *************************************************************************  */
 
-// Destructor
+MembershipTypeRepository::MembershipTypeRepository(sqlite3 *connection) : db(connection) {}
 MembershipTypeRepository::~MembershipTypeRepository() {}
 
-// ------------------- Insert -------------------
+/* *************************************************************************
+                    ---------- INSERT MEMBERSHIP TYPE ----------
+   *************************************************************************  */
+
 bool MembershipTypeRepository::insertMembershipType(MembershipType &type)
 {
 
@@ -63,7 +64,10 @@ bool MembershipTypeRepository::insertMembershipType(MembershipType &type)
     return success;
 }
 
-// ------------------- Update -------------------
+/* *************************************************************************
+                    ---------- UPDATE MEMBERSHIP TYPE ----------
+   *************************************************************************  */
+
 bool MembershipTypeRepository::updateMembershipType(const MembershipType &type)
 {
 
@@ -107,7 +111,10 @@ bool MembershipTypeRepository::updateMembershipType(const MembershipType &type)
     return success;
 }
 
-// ------------------- Delete -------------------
+/* *************************************************************************
+                    ---------- DELETE MEMBERSHIP TYPE ----------
+   *************************************************************************  */
+
 bool MembershipTypeRepository::deleteMembershipType(int typeId)
 {
 
@@ -138,7 +145,10 @@ bool MembershipTypeRepository::deleteMembershipType(int typeId)
     return success;
 }
 
-// ------------------- Get By ID -------------------
+/* *************************************************************************
+                ---------- GET MEMBERSHIP TYPES BY ID's ----------
+   *************************************************************************  */
+
 std::unique_ptr<MembershipType> MembershipTypeRepository::getById(int typeId)
 {
 
@@ -188,7 +198,10 @@ std::unique_ptr<MembershipType> MembershipTypeRepository::getById(int typeId)
     return type;
 }
 
-// ------------------- Get All -------------------
+/* *************************************************************************
+                  ---------- GET ALL MEMBERSHIP TYPES ----------
+   *************************************************************************  */
+
 std::vector<MembershipType> MembershipTypeRepository::getAllMembershipTypes()
 {
 
@@ -231,7 +244,10 @@ std::vector<MembershipType> MembershipTypeRepository::getAllMembershipTypes()
     return types;
 }
 
-// ------------------- Save -------------------
+/* *************************************************************************
+                  ---------- SAVE ALL MEMBERSHIP TYPES ----------
+   *************************************************************************  */
+
 bool MembershipTypeRepository::save(MembershipType &type)
 {
     if (type.getMembershipTypeId() == 0)

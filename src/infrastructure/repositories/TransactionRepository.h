@@ -12,6 +12,7 @@ private:
 public:
     explicit TransactionRepository(sqlite3 *connection);
     ~TransactionRepository();
+    
     // Transaction management
     bool save(Transaction &transaction);
     bool beginTransaction();

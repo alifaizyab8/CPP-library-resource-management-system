@@ -5,22 +5,21 @@
 
 using namespace std;
 
-// Constructor -> this does not open the database, it only stores the pointer.
-TransactionRepository::TransactionRepository(sqlite3 *connection)
-    : db(connection)
-{
-}
+/* *************************************************************************
+                 ---------- CONSTRUCTORS & DESTRUCTORS ----------
+   *************************************************************************  */
 
-// Destructor
+// this does not open the database, it only stores the pointer.
+TransactionRepository::TransactionRepository(sqlite3 *connection) : db(connection) {}
 TransactionRepository::~TransactionRepository() {}
 
-// ------------------- Transaction Control -------------------
+// ---------------------------- Transaction Control --------------------------------------- 
 
-// ------------------- Begin Transaction -------------------
-//                starts a database transaction.
+// -------------- Begin Transaction (starts a database transaction) -----------------------
+
 bool TransactionRepository::beginTransaction()
 {
-    char *errMsg = nullptr; // -> to store error message in pointers
+    char *errMsg = nullptr;
     int rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, &errMsg);
     if (rc != SQLITE_OK)
     {
@@ -32,8 +31,8 @@ bool TransactionRepository::beginTransaction()
     return true;
 }
 
-// ------------------- Commit Transaction -------------------
-//                 This permanently saves changes.
+// -------------- Commit Transaction (This permanently saves changes) -----------------------
+
 bool TransactionRepository::commitTransaction()
 {
     char *errMsg = nullptr;
@@ -48,8 +47,8 @@ bool TransactionRepository::commitTransaction()
     return true;
 }
 
-// ------------------- Roll Back Transaction -------------------
-//                  This undoes changes since BEGIN.
+// -------------- Roll Back Transaction (This undoes changes since BEGIN.) -----------------------
+
 bool TransactionRepository::rollbackTransaction()
 {
     char *errMsg = nullptr;
@@ -64,7 +63,10 @@ bool TransactionRepository::rollbackTransaction()
     return true;
 }
 
-// ------------------- Insert Transaction -------------------
+/* *************************************************************************
+                     ---------- INSERT TRANSACTIONS ----------
+   *************************************************************************  */
+
 bool TransactionRepository::insertTransaction(Transaction &transaction)
 {
     const char *sql =
@@ -109,7 +111,10 @@ bool TransactionRepository::insertTransaction(Transaction &transaction)
     return success;
 }
 
-// ------------------- Update Transaction -------------------
+/* *************************************************************************
+                     ---------- UPDATE TRANSACTIONS ----------
+   *************************************************************************  */
+
 bool TransactionRepository::updateTransaction(const Transaction &transaction)
 {
     const char *sql =
@@ -151,7 +156,10 @@ bool TransactionRepository::updateTransaction(const Transaction &transaction)
     return success;
 }
 
-// ------------------- Delete Transaction -------------------
+/* *************************************************************************
+                     ---------- DELETE TRANSACTIONS ----------
+   *************************************************************************  */
+
 bool TransactionRepository::deleteTransaction(int transactionId)
 {
     const char *sql = "DELETE FROM transactions WHERE transaction_id=?;";
@@ -178,7 +186,9 @@ bool TransactionRepository::deleteTransaction(int transactionId)
     return success;
 }
 
-// ------------------- Find by ID -------------------
+/* *************************************************************************
+                  ---------- GET TRANSACTIONS BY ID's ----------
+   *************************************************************************  */
 std::unique_ptr<Transaction> TransactionRepository::getById(int transactionId)
 {
     const char *sql =
@@ -229,7 +239,10 @@ std::unique_ptr<Transaction> TransactionRepository::getById(int transactionId)
     return transaction;
 }
 
-// ------------------- Get Transactions by User ID -------------------
+/* *************************************************************************
+              ---------- GET TRANSACTIONS BY USER ID's ----------
+   *************************************************************************  */
+
 std::vector<Transaction> TransactionRepository::getByUserId(int userId)
 {
 
@@ -283,7 +296,10 @@ std::vector<Transaction> TransactionRepository::getByUserId(int userId)
     return transactions;
 }
 
-// ------------------- Save Transaction -------------------
+/* *************************************************************************
+                     ---------- SAVE TRANSACTIONS ----------
+   *************************************************************************  */
+
 bool TransactionRepository::save(Transaction &transaction)
 {
 

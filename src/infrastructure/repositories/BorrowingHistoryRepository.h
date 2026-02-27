@@ -5,22 +5,23 @@
 #include <sqlite3.h>
 #include "../../domain/BorrowingHistory.h"
 
-class BorrowingHistoryRepository {
+class BorrowingHistoryRepository
+{
 private:
-    sqlite3* db;
+    sqlite3 *db;
 
     // Internal helper methods
-    bool insertHistory(BorrowingHistory& history);
-    bool updateHistory(const BorrowingHistory& history);
+    bool insertHistory(BorrowingHistory &history);
+    bool updateHistory(const BorrowingHistory &history);
 
 public:
-    explicit BorrowingHistoryRepository(sqlite3* connection);
+    explicit BorrowingHistoryRepository(sqlite3 *connection);
     ~BorrowingHistoryRepository();
 
     // CRUD Operations
-    bool save(BorrowingHistory& history);
+    bool save(BorrowingHistory &history);
     bool deleteHistory(int historyId);
-    
+
     // Retrieval Operations
     std::unique_ptr<BorrowingHistory> getById(int historyId);
     std::vector<BorrowingHistory> getAll();

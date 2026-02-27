@@ -5,16 +5,17 @@
 
 using namespace std;
 
-// Constructor
-FundRequestRepository::FundRequestRepository(sqlite3 *connection)
-    : db(connection)
-{
-}
+/* *************************************************************************
+                 ---------- CONSTRUCTORS & DESTRUCTORS ----------
+   *************************************************************************  */
 
-// Destructor
+FundRequestRepository::FundRequestRepository(sqlite3 *connection) : db(connection) {}
 FundRequestRepository::~FundRequestRepository() {}
 
-// ------------------- Insert -------------------
+/* *************************************************************************
+                    ---------- INSERT FUND REQUESTS ----------
+   *************************************************************************  */
+
 bool FundRequestRepository::insertFundRequest(FundRequest &request)
 {
 
@@ -64,7 +65,10 @@ bool FundRequestRepository::insertFundRequest(FundRequest &request)
     return success;
 }
 
-// ------------------- Update -------------------
+/* *************************************************************************
+                    ---------- UPDATE FUND REQUESTS ----------
+   *************************************************************************  */
+
 bool FundRequestRepository::updateFundRequest(const FundRequest &request)
 {
 
@@ -111,7 +115,10 @@ bool FundRequestRepository::updateFundRequest(const FundRequest &request)
     return success;
 }
 
-// ------------------- Delete -------------------
+/* *************************************************************************
+                    ---------- DELETE FUND REQUESTS ----------
+   *************************************************************************  */
+
 bool FundRequestRepository::deleteFundRequest(int requestId)
 {
 
@@ -146,7 +153,10 @@ bool FundRequestRepository::deleteFundRequest(int requestId)
     return success;
 }
 
-// ------------------- Get By ID -------------------
+/* *************************************************************************
+                ---------- GET FUND REQUESTS BY ID's ----------
+   *************************************************************************  */
+
 std::unique_ptr<FundRequest> FundRequestRepository::getById(int requestId)
 {
 
@@ -196,7 +206,10 @@ std::unique_ptr<FundRequest> FundRequestRepository::getById(int requestId)
     return request;
 }
 
-// ------------------- Get By User -------------------
+/* *************************************************************************
+              ---------- GET FUND REQUESTS BY USER ID's ----------
+   *************************************************************************  */
+
 std::vector<FundRequest> FundRequestRepository::getByUserId(int userId)
 {
 
@@ -246,7 +259,10 @@ std::vector<FundRequest> FundRequestRepository::getByUserId(int userId)
     return requests;
 }
 
-// ------------------- Get All -------------------
+/* *************************************************************************
+                    ---------- GET ALL FUND REQUESTS ----------
+   *************************************************************************  */
+
 std::vector<FundRequest> FundRequestRepository::getAllFundRequests()
 {
 
@@ -288,7 +304,10 @@ std::vector<FundRequest> FundRequestRepository::getAllFundRequests()
     return requests;
 }
 
-// ------------------- Save -------------------
+/* *************************************************************************
+                    ---------- SAVE FUND REQUESTS ----------
+   *************************************************************************  */
+
 bool FundRequestRepository::save(FundRequest &request)
 {
     if (request.getRequestId() == 0)

@@ -11,20 +11,14 @@ private:
     sqlite3 *db;
 
     bool insertResource(Resource &resource);
-
     bool updateResource(const Resource &resource);
 
 public:
-    // Constructor
     explicit ResourceRepository(sqlite3 *connection);
-    // Destructor
     ~ResourceRepository();
 
     bool save(Resource &resource);
-
     bool deleteResource(int resourceId);
-
     std::unique_ptr<Resource> getById(int resourceId);
-
     std::vector<Resource> getAll();
 };

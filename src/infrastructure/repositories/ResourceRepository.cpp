@@ -6,6 +6,7 @@ using namespace std;
 /* *************************************************************************
                ---------- HELPER FOR NULL-SAFE TEXT ----------
    *************************************************************************  */
+
 string safeText(sqlite3_stmt *stmt, int col)
 {
     const unsigned char *txt = sqlite3_column_text(stmt, col);
@@ -15,22 +16,21 @@ string safeText(sqlite3_stmt *stmt, int col)
 }
 
 /* *************************************************************************
-                     ---------- CONSTRUCTOR ----------
+                 ---------- CONSTRUCTORS & DESTRUCTORS ----------
    *************************************************************************  */
+
 ResourceRepository::ResourceRepository(sqlite3 *connection) : db(connection)
 {
     // Enables foreign keys
     sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
 }
 
-/* *************************************************************************
-                     ---------- DESTRUCTOR ----------
-   *************************************************************************  */
 ResourceRepository::~ResourceRepository() {}
 
 /* *************************************************************************
-                     ---------- INSERT ----------
+                     ---------- INSERT RESOURCES ----------
    *************************************************************************  */
+
 bool ResourceRepository::insertResource(Resource &resource)
 {
     const char *sql =
@@ -70,8 +70,9 @@ bool ResourceRepository::insertResource(Resource &resource)
 }
 
 /* *************************************************************************
-                     ---------- UPDATE ----------
+                     ---------- UPDATE RESOURCES ----------
    *************************************************************************  */
+
 bool ResourceRepository::updateResource(const Resource &resource)
 {
     const char *sql =
@@ -111,8 +112,9 @@ bool ResourceRepository::updateResource(const Resource &resource)
 }
 
 /* *************************************************************************
-                     ---------- SAVE ----------
+                     ---------- SAVE RESOURCES ----------
    *************************************************************************  */
+
 bool ResourceRepository::save(Resource &resource)
 {
     if (resource.getResourceId() == 0)
@@ -121,8 +123,9 @@ bool ResourceRepository::save(Resource &resource)
 }
 
 /* *************************************************************************
-                     ---------- DELETE ----------
+                     ---------- DELETE RESOURCES ----------
    *************************************************************************  */
+
 bool ResourceRepository::deleteResource(int resourceId)
 {
     const char *sql = "DELETE FROM resources WHERE resource_id=?;";
@@ -146,7 +149,7 @@ bool ResourceRepository::deleteResource(int resourceId)
 }
 
 /* *************************************************************************
-                     ---------- GET BY ID ----------
+                    ---------- GET RESOURCES BY ID's ----------
    *************************************************************************  */
 
 unique_ptr<Resource> ResourceRepository::getById(int resourceId)
@@ -190,8 +193,9 @@ unique_ptr<Resource> ResourceRepository::getById(int resourceId)
 }
 
 /* *************************************************************************
-                     ---------- GET ALL ----------
+                     ---------- GET ALL RESOURCES ----------
    *************************************************************************  */
+
 vector<Resource> ResourceRepository::getAll()
 {
     vector<Resource> results;

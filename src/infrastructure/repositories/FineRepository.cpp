@@ -2,19 +2,19 @@
 #include <sqlite3.h>
 #include <iostream>
 
-
 using namespace std;
 
-// Constructor
-FineRepository::FineRepository(sqlite3 *connection)
-    : db(connection)
-{
-}
+/* *************************************************************************
+                 ---------- CONSTRUCTORS & DESTRUCTORS ----------
+   *************************************************************************  */
 
-// Destructor
+FineRepository::FineRepository(sqlite3 *connection) : db(connection) {}
 FineRepository::~FineRepository() {}
 
-// ------------------- Insert Fine -------------------
+/* *************************************************************************
+                       ---------- INSERT FINES ----------
+   *************************************************************************  */
+
 bool FineRepository::insertFine(Fine &fine)
 {
 
@@ -65,7 +65,10 @@ bool FineRepository::insertFine(Fine &fine)
     return success;
 }
 
-// ------------------- Update Fine -------------------
+/* *************************************************************************
+                       ---------- UPDATE FINES ----------
+   *************************************************************************  */
+
 bool FineRepository::updateFine(const Fine &fine)
 {
 
@@ -112,7 +115,10 @@ bool FineRepository::updateFine(const Fine &fine)
     return success;
 }
 
-// ------------------- Delete Fine -------------------
+/* *************************************************************************
+                       ---------- DELETE FINES ----------
+   *************************************************************************  */
+
 bool FineRepository::deleteFine(int fineId)
 {
 
@@ -148,7 +154,10 @@ bool FineRepository::deleteFine(int fineId)
     return success;
 }
 
-// ------------------- Get By ID -------------------
+/* *************************************************************************
+                       ---------- GET FINES BY ID's ----------
+   *************************************************************************  */
+
 std::unique_ptr<Fine> FineRepository::getById(int fineId)
 {
 
@@ -199,7 +208,10 @@ std::unique_ptr<Fine> FineRepository::getById(int fineId)
     return fine;
 }
 
-// ------------------- Get By User ID -------------------
+/* *************************************************************************
+                  ---------- GET FINES BY USER ID's ----------
+   *************************************************************************  */
+
 std::vector<Fine> FineRepository::getByUserId(int userId)
 {
 
@@ -250,7 +262,10 @@ std::vector<Fine> FineRepository::getByUserId(int userId)
     return fines;
 }
 
-// ------------------- Get All -------------------
+/* *************************************************************************
+                       ---------- GET ALL FINES ----------
+   *************************************************************************  */
+
 std::vector<Fine> FineRepository::getAllFines()
 {
 
@@ -292,7 +307,10 @@ std::vector<Fine> FineRepository::getAllFines()
     return fines;
 }
 
-// ------------------- Save -------------------
+/* *************************************************************************
+                       ---------- SAVE ALL FINES ----------
+   *************************************************************************  */
+
 bool FineRepository::save(Fine &fine)
 {
     if (fine.getFineId() == 0)

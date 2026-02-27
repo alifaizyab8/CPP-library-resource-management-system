@@ -5,18 +5,19 @@
 #include <memory>
 #include "../../domain/Fine.h"
 
-class FineRepository {
+class FineRepository
+{
 private:
-    sqlite3* db;
+    sqlite3 *db;
 
-    bool insertFine(Fine& fine);
-    bool updateFine(const Fine& fine);
+    bool insertFine(Fine &fine);
+    bool updateFine(const Fine &fine);
 
 public:
-    explicit FineRepository(sqlite3* connection);
+    explicit FineRepository(sqlite3 *connection);
     ~FineRepository();
 
-    bool save(Fine& fine);
+    bool save(Fine &fine);
     bool deleteFine(int fineId);
 
     std::unique_ptr<Fine> getById(int fineId);

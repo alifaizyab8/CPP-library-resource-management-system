@@ -3,8 +3,7 @@
 #include <sqlite3.h>
 #include <vector>
 #include <string>
-#include<memory>
-
+#include <memory>
 
 class AdministratorRepository
 {

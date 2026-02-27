@@ -4,6 +4,7 @@
 /* *************************************************************************
                      ---------- CONSTRUCTOR ----------
    *************************************************************************  */
+
 DatabaseInitializer::DatabaseInitializer(const std::string &filename)
     : db(nullptr), dbFile(filename)
 {
@@ -21,6 +22,7 @@ DatabaseInitializer::DatabaseInitializer(const std::string &filename)
 /* *************************************************************************
                      ---------- DESTRUCTOR ----------
    *************************************************************************  */
+
 DatabaseInitializer::~DatabaseInitializer()
 {
     if (db)
@@ -33,6 +35,7 @@ DatabaseInitializer::~DatabaseInitializer()
 /* *************************************************************************
                   ---------- OPENING THE DATABASE ----------
    *************************************************************************  */
+
 bool DatabaseInitializer::open()
 {
     if (sqlite3_open(dbFile.c_str(), &db) != SQLITE_OK)
@@ -44,6 +47,10 @@ bool DatabaseInitializer::open()
     return true;
 }
 
+/* *************************************************************************
+                  ---------- CONNECTING THE DATABASE ----------
+   *************************************************************************  */
+
 // Assign a pointer to the database so that it's accessible elsewhere.
 sqlite3 *DatabaseInitializer::getConnection()
 {
@@ -51,8 +58,9 @@ sqlite3 *DatabaseInitializer::getConnection()
 }
 
 /* *************************************************************************
-                     ---------- TABLES ----------
+                         ---------- TABLES ----------
    *************************************************************************  */
+
 bool DatabaseInitializer::createTables()
 {
     // For Foreign Keys to work, the independent tables must be created first
@@ -149,7 +157,7 @@ bool DatabaseInitializer::createTables()
         "FOREIGN KEY(resource_id) REFERENCES resources(resource_id) ON DELETE CASCADE"
         ");";
 
-    /*  ---------- Fine Table ---------- */
+    /*  ---------- Fines Table ---------- */
     const char *fineTable =
         "CREATE TABLE IF NOT EXISTS fines ("
         "fine_id INTEGER PRIMARY KEY AUTOINCREMENT,"
