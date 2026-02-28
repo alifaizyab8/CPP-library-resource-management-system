@@ -130,13 +130,12 @@ bool DatabaseInitializer::createTables()
         "publication_year INTEGER NOT NULL,"
         "isbn TEXT NOT NULL,"
         "category_id INTEGER NOT NULL,"
-        "resource_type_id INTEGER NOT NULL,"
         "total_copies INTEGER NOT NULL DEFAULT 1,"
         "available_copies INTEGER NOT NULL DEFAULT 1,"
         "description TEXT,"
         "added_date TEXT NOT NULL,"
         "is_active INTEGER NOT NULL DEFAULT 1,"
-        "FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE RESTRICT,"
+        "FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE RESTRICT"
         ");";
 
     /*  ---------- Transactions Table ---------- */

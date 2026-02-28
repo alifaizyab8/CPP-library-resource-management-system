@@ -22,7 +22,7 @@ public:
                  totalCopies(0), availableCopies(0), isActive(false) {}
 
     Resource(int id, const std::string &title, const std::string &author, const std::string &pub,
-             int year, const std::string &isbn, int catId, int typeId, int tCopies, int aCopies,
+             int year, const std::string &isbn, int catId, int tCopies, int aCopies,
              const std::string &desc, const std::string &date, bool active)
         : resourceId(id), title(title), author(author), publisher(pub), publicationYear(year),
           isbn(isbn), categoryId(catId), totalCopies(tCopies),
