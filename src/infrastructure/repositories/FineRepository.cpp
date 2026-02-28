@@ -1,6 +1,7 @@
 #include "FineRepository.h"
 #include <sqlite3.h>
 #include <iostream>
+#include <memory>
 
 using namespace std;
 

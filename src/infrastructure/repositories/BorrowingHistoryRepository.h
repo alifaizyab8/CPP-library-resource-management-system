@@ -1,8 +1,8 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include <string>
 #include <sqlite3.h>
+#include <vector>
+#include <string>
+#include <memory>
 #include "../../domain/BorrowingHistory.h"
 
 class BorrowingHistoryRepository

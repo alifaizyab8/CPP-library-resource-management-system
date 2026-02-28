@@ -1,8 +1,8 @@
 #pragma once
+#include <sqlite3.h>
 #include <vector>
-#include <memory>
 #include <string>
-#include "sqlite3.h"
+#include <memory>
 #include "../../domain/Resource.h"
 
 class ResourceRepository
