@@ -1,19 +1,19 @@
 #include "AdministratorRepository.h"
-#include <sqlite3.h>
 #include <iostream>
 
 using namespace std;
 
-// Constructor
-AdministratorRepository::AdministratorRepository(sqlite3 *connection)
-    : db(connection)
-{
-}
+/* *************************************************************************
+                 ---------- CONSTRUCTORS & DESTRUCTORS ----------
+   *************************************************************************  */
 
-// Destructor
+AdministratorRepository::AdministratorRepository(sqlite3 *connection) : db(connection) {}
 AdministratorRepository::~AdministratorRepository() {}
 
-// ------------------- Insert Administrator -------------------
+/* *************************************************************************
+                 ---------- INSERT ADMINISTRATOR ----------
+   *************************************************************************  */
+
 bool AdministratorRepository::insertAdministrator(Administrator &admin)
 {
 
@@ -64,7 +64,10 @@ bool AdministratorRepository::insertAdministrator(Administrator &admin)
     return success;
 }
 
-// ------------------- Update Administrator -------------------
+/* *************************************************************************
+                 ---------- UPDATE ADMINISTRATOR ----------
+   *************************************************************************  */
+
 bool AdministratorRepository::updateAdministrator(const Administrator &admin)
 {
 
@@ -111,7 +114,10 @@ bool AdministratorRepository::updateAdministrator(const Administrator &admin)
     return success;
 }
 
-// ------------------- Delete Administrator -------------------
+/* *************************************************************************
+                 ---------- DELETE ADMINISTRATOR ----------
+   *************************************************************************  */
+
 bool AdministratorRepository::deleteAdministrator(int adminId)
 {
 
@@ -147,7 +153,10 @@ bool AdministratorRepository::deleteAdministrator(int adminId)
     return success;
 }
 
-// ------------------- Get By ID -------------------
+/* *************************************************************************
+                 ---------- FIND ADMINISTRATORS BY ID's ----------
+   *************************************************************************  */
+
 std::unique_ptr<Administrator> AdministratorRepository::getById(int adminId)
 {
 
@@ -198,7 +207,10 @@ std::unique_ptr<Administrator> AdministratorRepository::getById(int adminId)
     return admin;
 }
 
-// ------------------- Get All Administrators -------------------
+/* *************************************************************************
+                 ---------- GET ALL ADMINISTRATORS ----------
+   *************************************************************************  */
+
 std::vector<Administrator> AdministratorRepository::getAllAdministrators()
 {
 
@@ -240,7 +252,10 @@ std::vector<Administrator> AdministratorRepository::getAllAdministrators()
     return admins;
 }
 
-// ------------------- Save -------------------
+/* *************************************************************************
+                 ---------- SAVE ADMINISTRATOR ----------
+   *************************************************************************  */
+
 bool AdministratorRepository::save(Administrator &admin)
 {
     if (admin.getAdminId() == 0)
