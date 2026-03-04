@@ -2,8 +2,9 @@
 #include <sqlite3.h>
 #include <vector>
 #include <string>
-#include "../../domain/Transaction.h"
 #include <memory>
+#include "../../domain/Transaction.h"
+
 class TransactionRepository
 {
 private:
@@ -12,6 +13,7 @@ private:
 public:
     explicit TransactionRepository(sqlite3 *connection);
     ~TransactionRepository();
+    
     // Transaction management
     bool save(Transaction &transaction);
     bool beginTransaction();

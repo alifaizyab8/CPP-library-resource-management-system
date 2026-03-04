@@ -1,23 +1,21 @@
 #include "UserRepository.h"
-#include <sqlite3.h>
 #include <iostream>
-#include <memory>
 
 using namespace std;
 
-// Constructor
-UserRepository::UserRepository(sqlite3 *connection)
-    : db(connection)
-{
-}
+/* *************************************************************************
+                 ---------- CONSTRUCTORS & DESTRUCTORS ----------
+   *************************************************************************  */
 
-// Destructor
+UserRepository::UserRepository(sqlite3 *connection) : db(connection) {}
 UserRepository::~UserRepository() {}
 
-// ------------------- Insert User -------------------
+/* *************************************************************************
+                        ---------- INSERT USER ----------
+   *************************************************************************  */
+
 bool UserRepository::insertUser(User &user)
 {
-
     const char *sql =
         "INSERT INTO users "
         "(username, password, first_name, last_name, email, address, phone, "
@@ -63,7 +61,10 @@ bool UserRepository::insertUser(User &user)
     return success;
 }
 
-// ------------------- Update User -------------------
+/* *************************************************************************
+                        ---------- UPDATE USER ----------
+   *************************************************************************  */
+
 bool UserRepository::updateUser(const User &user)
 {
 
@@ -109,7 +110,10 @@ bool UserRepository::updateUser(const User &user)
     return success;
 }
 
-// ------------------- Delete User -------------------
+/* *************************************************************************
+                        ---------- DELETE USER ----------
+   *************************************************************************  */
+
 bool UserRepository::deleteUser(int userId)
 {
 
@@ -137,7 +141,10 @@ bool UserRepository::deleteUser(int userId)
     return success;
 }
 
-// ------------------- Get By ID -------------------
+/* *************************************************************************
+                        ---------- GET USER BY ID's ----------
+   *************************************************************************  */
+
 std::unique_ptr<User> UserRepository::getById(int userId)
 {
 
@@ -190,7 +197,10 @@ std::unique_ptr<User> UserRepository::getById(int userId)
     return user;
 }
 
-// ------------------- Get By Username -------------------
+/* *************************************************************************
+                    ---------- GET USER BY USERNAME ----------
+   *************************************************************************  */
+
 std::unique_ptr<User> UserRepository::getByUsername(const std::string &username)
 {
 
@@ -243,7 +253,10 @@ std::unique_ptr<User> UserRepository::getByUsername(const std::string &username)
     return user;
 }
 
-// ------------------- Get All Users -------------------
+/* *************************************************************************
+                        ---------- GET ALL USERS ----------
+   *************************************************************************  */
+
 std::vector<User> UserRepository::getAllUsers()
 {
 
@@ -289,7 +302,10 @@ std::vector<User> UserRepository::getAllUsers()
     return users;
 }
 
-// ------------------- Save -------------------
+/* *************************************************************************
+                        ---------- SAVE USER ----------
+   *************************************************************************  */
+
 bool UserRepository::save(User &user)
 {
     if (user.getUserId() == 0)

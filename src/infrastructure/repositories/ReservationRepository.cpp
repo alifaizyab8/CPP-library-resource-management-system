@@ -1,20 +1,19 @@
 #include "ReservationRepository.h"
-#include <sqlite3.h>
 #include <iostream>
-#include <memory>
 
 using namespace std;
 
-// Constructor
-ReservationRepository::ReservationRepository(sqlite3 *connection)
-    : db(connection)
-{
-}
+/* *************************************************************************
+                 ---------- CONSTRUCTORS & DESTRUCTORS ----------
+   *************************************************************************  */
 
-// Destructor
+ReservationRepository::ReservationRepository(sqlite3 *connection) : db(connection) {}
 ReservationRepository::~ReservationRepository() {}
 
-// ------------------- Insert -------------------
+/* *************************************************************************
+                    ---------- INSERT RESERVATIONS ----------
+   *************************************************************************  */
+
 bool ReservationRepository::insertReservation(Reservation &reservation)
 {
 
@@ -62,7 +61,10 @@ bool ReservationRepository::insertReservation(Reservation &reservation)
     return success;
 }
 
-// ------------------- Update -------------------
+/* *************************************************************************
+                    ---------- UPDATE RESERVATIONS ----------
+   *************************************************************************  */
+
 bool ReservationRepository::updateReservation(const Reservation &reservation)
 {
 
@@ -104,7 +106,10 @@ bool ReservationRepository::updateReservation(const Reservation &reservation)
     return success;
 }
 
-// ------------------- Delete -------------------
+/* *************************************************************************
+                    ---------- DELETE RESERVATIONS ----------
+   *************************************************************************  */
+
 bool ReservationRepository::deleteReservation(int reservationId)
 {
 
@@ -134,7 +139,10 @@ bool ReservationRepository::deleteReservation(int reservationId)
     return success;
 }
 
-// ------------------- Get By ID -------------------
+/* *************************************************************************
+                   ---------- GET RESERVATION BY ID's ----------
+   *************************************************************************  */
+
 std::unique_ptr<Reservation> ReservationRepository::getById(int reservationId)
 {
 
@@ -183,7 +191,10 @@ std::unique_ptr<Reservation> ReservationRepository::getById(int reservationId)
     return reservation;
 }
 
-// ------------------- Get By User ID -------------------
+/* *************************************************************************
+                ---------- GET RESERVATIONS BY USER ID's ----------
+   *************************************************************************  */
+
 std::vector<Reservation> ReservationRepository::getByUserId(int userId)
 {
 
@@ -232,7 +243,10 @@ std::vector<Reservation> ReservationRepository::getByUserId(int userId)
     return reservations;
 }
 
-// ------------------- Get By Resource ID -------------------
+/* *************************************************************************
+               ---------- GET RESERVATIONS BY RESOURCE ID ----------
+   *************************************************************************  */
+
 std::vector<Reservation> ReservationRepository::getByResourceId(int resourceId)
 {
 
@@ -281,7 +295,10 @@ std::vector<Reservation> ReservationRepository::getByResourceId(int resourceId)
     return reservations;
 }
 
-// ------------------- Get All -------------------
+/* *************************************************************************
+                    ---------- GET ALL RESERVATIONS ----------
+   *************************************************************************  */
+
 std::vector<Reservation> ReservationRepository::getAllReservations()
 {
 
@@ -323,7 +340,10 @@ std::vector<Reservation> ReservationRepository::getAllReservations()
     return reservations;
 }
 
-// ------------------- Save -------------------
+/* *************************************************************************
+                    ---------- SAVE ALL RESERVATIONS ----------
+   *************************************************************************  */
+
 bool ReservationRepository::save(Reservation &reservation)
 {
     if (reservation.getReservationId() == 0)

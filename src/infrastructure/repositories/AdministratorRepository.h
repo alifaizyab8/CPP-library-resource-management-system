@@ -1,10 +1,9 @@
 #pragma once
-#include "../../domain/Administrator.h"
 #include <sqlite3.h>
 #include <vector>
 #include <string>
-#include<memory>
-
+#include <memory>
+#include "../../domain/Administrator.h"
 
 class AdministratorRepository
 {
