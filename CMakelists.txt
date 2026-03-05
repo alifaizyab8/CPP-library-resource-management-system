@@ -21,6 +21,10 @@ list(APPEND SRC_FILES "${PROJECT_SOURCE_DIR}/include/sqlite3.c")
 
 # ---- Create executable ----
 add_executable(LibraryManagementSystem ${SRC_FILES})
+target_include_directories(LibraryManagementSystem PRIVATE
+    ${PROJECT_SOURCE_DIR}/src
+)
+
 
 # Note: find_package(SQLite3 REQUIRED) and target_link_libraries are removed.
 # You might need to link standard system threads depending on your OS, 
