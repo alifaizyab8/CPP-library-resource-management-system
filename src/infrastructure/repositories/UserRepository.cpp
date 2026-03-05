@@ -19,8 +19,8 @@ bool UserRepository::insertUser(User &user)
     const char *sql =
         "INSERT INTO users "
         "(username, password, first_name, last_name, email, address, phone, "
-        "balance, membership_type_id, registration_date, is_active) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        "balance, membership_type_id, registration_date, is_active, deletion_requested) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"; // Extra question mark to accomodate new attribute
 
     sqlite3_stmt *stmt = nullptr;
 
@@ -41,6 +41,7 @@ bool UserRepository::insertUser(User &user)
         sqlite3_bind_int(stmt, 9, user.getMembershipTypeId()) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 10, user.getRegistrationDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_int(stmt, 11, user.getIsActive() ? 1 : 0) != SQLITE_OK)
+        sqlite3_bind_int(stmt, 12, user.getDeletionRequested() ? 1 : 0); // 12th bind for accomodation
     {
 
         cerr << "Failed to bind parameters for INSERT: " << sqlite3_errmsg(db) << endl;
@@ -72,7 +73,7 @@ bool UserRepository::updateUser(const User &user)
         "UPDATE users SET "
         "username=?, password=?, first_name=?, last_name=?, email=?, "
         "address=?, phone=?, balance=?, membership_type_id=?, "
-        "registration_date=?, is_active=? "
+        "registration_date=?, is_active=?, deletion_requested=? " // Added the attribute here as well
         "WHERE user_id=?;";
 
     sqlite3_stmt *stmt = nullptr;
@@ -94,7 +95,8 @@ bool UserRepository::updateUser(const User &user)
         sqlite3_bind_int(stmt, 9, user.getMembershipTypeId()) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 10, user.getRegistrationDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_int(stmt, 11, user.getIsActive() ? 1 : 0) != SQLITE_OK ||
-        sqlite3_bind_int(stmt, 12, user.getUserId()) != SQLITE_OK)
+        sqlite3_bind_int(stmt, 12, user.getDeletionRequested() ? 1 : 0) || // Added the accomodation
+        sqlite3_bind_int(stmt, 13, user.getUserId()))
     {
 
         cerr << "Failed to bind parameters for UPDATE: " << sqlite3_errmsg(db) << endl;
@@ -150,9 +152,8 @@ std::unique_ptr<User> UserRepository::getById(int userId)
 
     const char *sql =
         "SELECT user_id, username, password, first_name, last_name, email, "
-        "address, phone, balance, membership_type_id, registration_date, is_active "
+        "address, phone, balance, membership_type_id, registration_date, is_active, deletion_requested " // Added
         "FROM users WHERE user_id=?;";
-
     sqlite3_stmt *stmt = nullptr;
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
@@ -190,7 +191,8 @@ std::unique_ptr<User> UserRepository::getById(int userId)
             sqlite3_column_double(stmt, 8),
             sqlite3_column_int(stmt, 9),
             safeText(stmt, 10),
-            sqlite3_column_int(stmt, 11) == 1);
+            sqlite3_column_int(stmt, 11) == 1,
+            sqlite3_column_int(stmt, 12) == 1); //  Added deletionRequested
     }
 
     sqlite3_finalize(stmt);
@@ -206,7 +208,7 @@ std::unique_ptr<User> UserRepository::getByUsername(const std::string &username)
 
     const char *sql =
         "SELECT user_id, username, password, first_name, last_name, email, "
-        "address, phone, balance, membership_type_id, registration_date, is_active "
+        "address, phone, balance, membership_type_id, registration_date, is_active, deletion_requested "
         "FROM users WHERE username=?;";
 
     sqlite3_stmt *stmt = nullptr;
@@ -246,7 +248,8 @@ std::unique_ptr<User> UserRepository::getByUsername(const std::string &username)
             sqlite3_column_double(stmt, 8),
             sqlite3_column_int(stmt, 9),
             safeText(stmt, 10),
-            sqlite3_column_int(stmt, 11) == 1);
+            sqlite3_column_int(stmt, 11) == 1,
+            sqlite3_column_int(stmt, 12) == 1); //  Added deletionRequested
     }
 
     sqlite3_finalize(stmt);
@@ -264,7 +267,7 @@ std::vector<User> UserRepository::getAllUsers()
 
     const char *sql =
         "SELECT user_id, username, password, first_name, last_name, email, "
-        "address, phone, balance, membership_type_id, registration_date, is_active "
+        "address, phone, balance, membership_type_id, registration_date, is_active, deletion_requested "
         "FROM users;";
 
     sqlite3_stmt *stmt = nullptr;
@@ -295,7 +298,8 @@ std::vector<User> UserRepository::getAllUsers()
             sqlite3_column_double(stmt, 8),
             sqlite3_column_int(stmt, 9),
             safeText(stmt, 10),
-            sqlite3_column_int(stmt, 11) == 1);
+            sqlite3_column_int(stmt, 11) == 1,
+            sqlite3_column_int(stmt, 12) == 1); //  Added deletionRequested
     }
 
     sqlite3_finalize(stmt);
