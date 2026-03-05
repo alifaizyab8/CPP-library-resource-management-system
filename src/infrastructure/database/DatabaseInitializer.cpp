@@ -117,6 +117,7 @@ bool DatabaseInitializer::createTables()
         "membership_type_id INTEGER NOT NULL,"
         "registration_date TEXT NOT NULL,"
         "is_active INTEGER NOT NULL DEFAULT 1,"
+        "deletion_requested INTEGER NOT NULL DEFAULT 0," // Entry to accomodate Header Changes
         "FOREIGN KEY(membership_type_id) REFERENCES membership_types(membership_type_id) ON DELETE RESTRICT"
         ");";
 
