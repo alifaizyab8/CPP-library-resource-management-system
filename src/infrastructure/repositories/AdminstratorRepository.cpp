@@ -208,6 +208,59 @@ std::unique_ptr<Administrator> AdministratorRepository::getById(int adminId)
 }
 
 /* *************************************************************************
+                 ---------- GET ADMINISTRATOR BY USERNAME ----------
+   *************************************************************************  */
+
+
+std::unique_ptr<Administrator> AdministratorRepository::getByUsername(const std::string &username)
+{
+    const char *sql =
+        "SELECT admin_id, username, password, first_name, last_name, "
+        "email, created_date, is_active "
+        "FROM administrators WHERE username=?;";
+
+    sqlite3_stmt *stmt = nullptr;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
+        cerr << "Failed to prepare SELECT BY USERNAME: " << sqlite3_errmsg(db) << endl;
+        return nullptr;
+    }
+
+    if (sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK)
+    {
+        cerr << "Failed to bind username: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        return nullptr;
+    }
+
+    auto safeText = [](sqlite3_stmt *stmt, int col) -> string
+    {
+        const unsigned char *text = sqlite3_column_text(stmt, col);
+        return text ? reinterpret_cast<const char *>(text) : "";
+    };
+
+    std::unique_ptr<Administrator> admin = nullptr;
+
+    if (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        admin = std::make_unique<Administrator>(
+            sqlite3_column_int(stmt, 0),
+            safeText(stmt, 1),
+            safeText(stmt, 2),
+            safeText(stmt, 3),
+            safeText(stmt, 4),
+            safeText(stmt, 5),
+            safeText(stmt, 6),
+            sqlite3_column_int(stmt, 7) == 1);
+    }
+
+    sqlite3_finalize(stmt);
+    return admin;
+}
+
+
+/* *************************************************************************
                  ---------- GET ALL ADMINISTRATORS ----------
    *************************************************************************  */
 

@@ -21,5 +21,6 @@ public:
     bool deleteAdministrator(int adminId);
 
     std::unique_ptr<Administrator> getById(int adminId);
+    std::unique_ptr<Administrator> getByUsername(const std::string &username);
     std::vector<Administrator> getAllAdministrators();
 };
