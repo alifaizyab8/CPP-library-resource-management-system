@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-// Including all required repositories
+// Including all Domains
 
 #include "../domain/User.h"
 #include "../domain/Resource.h"
@@ -36,6 +36,9 @@ private:
     FundRequestRepository &fundReqRepo;
     MembershipTypeRepository &membershipRepo;
 
+    // the helper function
+    std::string toLowerCase(const std::string &str);
+
 public:
     UserService(UserRepository &usrRepo, ResourceRepository &resRepo, TransactionRepository &tranRepo,
                 FineRepository &finRepo, BorrowingHistoryRepository &brhRepo, FundRequestRepository &frRepo,
@@ -43,10 +46,10 @@ public:
 
     bool updateProfile(User &user);
 
-    bool requestAccountDeletion(int userId);
+    std::string requestAccountDeletion(int userId);
 
     // Browse all available resources
-    std::vector<Resource> showAllCatalogue();
+    std::vector<Resource> showAllAvailableCatalogue();
 
     // Search by title or author
     std::vector<Resource> searchCatalogue(const std::string &keyword);
@@ -63,5 +66,5 @@ public:
     std::vector<Fine> getCurrentFines(int userId);
 
     // Create Fund Request
-    bool requestFund(int userId, double amount);
+    bool requestFund(int userId, double amount, const std::string &simualtedDate);
 };
