@@ -406,3 +406,55 @@ std::vector<Transaction> TransactionRepository::getActiveIssues()
     sqlite3_finalize(stmt);
     return transactions;
 }
+
+std::vector<Transaction> TransactionRepository::getbyStatus(const std::string &status)
+{
+    std::vector<Transaction> transactions;
+
+    const char *sql =
+        "SELECT transaction_id, user_id, resource_id, issue_date, due_date, return_date, "
+        "fine_amount, is_returned, is_overdue, renewal_count, transaction_status "
+        "FROM transactions WHERE transaction_status = ?;";
+
+    sqlite3_stmt *stmt = nullptr;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    {
+        std::cerr << "Failed to prepare getbyStatus statement: "
+                  << sqlite3_errmsg(db) << std::endl;
+        return transactions;
+    }
+
+    if (sqlite3_bind_text(stmt, 1, status.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK)
+    {
+        std::cerr << "Failed to bind status in getbyStatus: "
+                  << sqlite3_errmsg(db) << std::endl;
+        sqlite3_finalize(stmt);
+        return transactions;
+    }
+
+    auto safeText = [](sqlite3_stmt *s, int col) -> std::string
+    {
+        const unsigned char *text = sqlite3_column_text(s, col);
+        return text ? reinterpret_cast<const char *>(text) : "";
+    };
+
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        transactions.emplace_back(
+            sqlite3_column_int(stmt, 0),
+            sqlite3_column_int(stmt, 1),
+            sqlite3_column_int(stmt, 2),
+            safeText(stmt, 3),
+            safeText(stmt, 4),
+            safeText(stmt, 5),
+            sqlite3_column_double(stmt, 6),
+            sqlite3_column_int(stmt, 7),
+            sqlite3_column_int(stmt, 8),
+            sqlite3_column_int(stmt, 9),
+            safeText(stmt, 10));
+    }
+
+    sqlite3_finalize(stmt);
+    return transactions;
+}
