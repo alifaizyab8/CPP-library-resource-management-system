@@ -24,13 +24,13 @@ add_executable(LibraryManagementSystem ${SRC_FILES})
 target_include_directories(LibraryManagementSystem PRIVATE
     ${PROJECT_SOURCE_DIR}/src
 )
-# Define where the tools are
+# ---- Define where the tools are ----
 
 set(TOOLS_DIR "${PROJECT_SOURCE_DIR}/tools")
  
 
 
-# This points to the 'tools' folder in your project root
+# ---- This points to the 'tools' folder in your project root ----
 
 set(TOOLS_SRC_DIR "${CMAKE_SOURCE_DIR}/tools")
 
