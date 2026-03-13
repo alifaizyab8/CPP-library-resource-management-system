@@ -36,5 +36,7 @@ public:
 
     // Setter
     void setId(int id) { historyId = id; }
+    void setReturnDate(const string &date) { returnDate = date; }
+    void setFineAmount(double fine) { fineAmount = fine; }
 };
 
