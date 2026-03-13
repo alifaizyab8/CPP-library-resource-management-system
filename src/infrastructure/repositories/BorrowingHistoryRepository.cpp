@@ -174,3 +174,46 @@ vector<BorrowingHistory> BorrowingHistoryRepository::getAll()
     sqlite3_finalize(stmt);
     return results;
 }
+
+/* *************************************************************************
+                ---------- GET BORROWING HISTORY BY USER ID ----------
+   *************************************************************************  */
+
+vector<BorrowingHistory> BorrowingHistoryRepository::getByUserId(int userId)
+{
+    vector<BorrowingHistory> results;
+
+    const char *sql =
+        "SELECT history_id, user_id, resource_id, issue_date, due_date, return_date, fine_amount "
+        "FROM borrowing_history WHERE user_id=?;";
+
+    sqlite3_stmt *stmt = nullptr;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+        return results;
+
+    sqlite3_bind_int(stmt, 1, userId);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        const unsigned char *issueText = sqlite3_column_text(stmt, 3);
+        const unsigned char *dueText = sqlite3_column_text(stmt, 4);
+        const unsigned char *returnText = sqlite3_column_text(stmt, 5);
+
+        BorrowingHistory bh(
+            sqlite3_column_int(stmt, 1),
+            sqlite3_column_int(stmt, 2),
+            issueText ? reinterpret_cast<const char *>(issueText) : "",
+            dueText ? reinterpret_cast<const char *>(dueText) : "",
+            returnText ? reinterpret_cast<const char *>(returnText) : "",
+            sqlite3_column_double(stmt, 6));
+
+        bh.setId(sqlite3_column_int(stmt, 0));
+
+        results.push_back(bh);
+    }
+
+    sqlite3_finalize(stmt);
+
+    return results;
+}
