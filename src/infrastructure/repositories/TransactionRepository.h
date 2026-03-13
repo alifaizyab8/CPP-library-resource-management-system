@@ -30,4 +30,5 @@ public:
     std::vector<Transaction> getAllTransactions();
 
     std::vector<Transaction> getActiveIssues();
+    std::vector<Transaction> getbyStatus(const std::string &status);
 };
