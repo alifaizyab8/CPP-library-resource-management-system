@@ -23,4 +23,5 @@ public:
     std::unique_ptr<User> getById(int userId);
     std::unique_ptr<User> getByUsername(const std::string &username);
     std::vector<User> getAllUsers();
+    std::vector<User> getPendingDeletionRequests();
 };
