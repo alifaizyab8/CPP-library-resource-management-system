@@ -24,6 +24,34 @@ add_executable(LibraryManagementSystem ${SRC_FILES})
 target_include_directories(LibraryManagementSystem PRIVATE
     ${PROJECT_SOURCE_DIR}/src
 )
+# Define where the tools are
+
+set(TOOLS_DIR "${PROJECT_SOURCE_DIR}/tools")
+ 
+
+
+# This points to the 'tools' folder in your project root
+
+set(TOOLS_SRC_DIR "${CMAKE_SOURCE_DIR}/tools")
+
+set(TOOLS_DST_DIR "${CMAKE_BINARY_DIR}")
+
+
+add_custom_command(TARGET LibraryManagementSystem POST_BUILD
+
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+
+        "${TOOLS_SRC_DIR}/wkhtmltopdf.exe"
+
+        "${TOOLS_DST_DIR}/wkhtmltopdf.exe"
+
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+
+        "${TOOLS_SRC_DIR}/wkhtmltox.dll"
+
+        "${TOOLS_DST_DIR}/wkhtmltox.dll"
+  
+)  
 
 
 # Note: find_package(SQLite3 REQUIRED) and target_link_libraries are removed.
