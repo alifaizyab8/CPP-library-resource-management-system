@@ -319,6 +319,9 @@ bool UserRepository::save(User &user)
     return updateUser(user);
 }
 
+/* *************************************************************************
+                ---------- GET PENDING DELETION REQUEST ----------
+   *************************************************************************  */
 
 std::vector<User> UserRepository::getPendingDeletionRequests()
 {
