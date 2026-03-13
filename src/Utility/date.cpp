@@ -1,0 +1,40 @@
+#include"date.h"
+#include <iostream>
+std::string getCurrentDate()
+{
+    std::cout << "Enter current year: ";
+    int year;
+    std::cin >> year;
+    std::cout << "Enter current month (1-12): ";
+    int month;
+    std::cin >> month;
+    std::cout << "Enter current day (1-31): ";
+    int day;
+    std::cin >> day;
+
+    return std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
+}
+
+std::string getDueDate(int daysToAdd, std::string currentDate=getCurrentDate())
+{
+    // parse currentDate
+    int year, month, day;
+    sscanf(currentDate.c_str(), "%d-%d-%d", &year, &month, &day);
+
+    // Simple logic to add days 
+    day += daysToAdd;
+
+    // Handle simple overflow of days 
+    if (day > 30)
+    {
+        day -= 30;
+        month += 1;
+        if (month > 12)
+        {
+            month = 1;
+            year += 1;
+        }
+    }
+
+    return std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
+}
