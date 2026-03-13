@@ -28,4 +28,6 @@ public:
     std::unique_ptr<Transaction> getById(int transactionId);
     std::vector<Transaction> getByUserId(int userId);
     std::vector<Transaction> getAllTransactions();
+
+    std::vector<Transaction> getActiveIssues();
 };
