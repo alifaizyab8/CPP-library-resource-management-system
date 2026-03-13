@@ -359,6 +359,10 @@ std::vector<Transaction> TransactionRepository::getAllTransactions()
     return transactions;
 }
 
+/* *************************************************************************
+                     ---------- GET ACTIVE ISSUES ----------
+   *************************************************************************  */
+
 std::vector<Transaction> TransactionRepository::getActiveIssues()
 {
     std::vector<Transaction> transactions;
