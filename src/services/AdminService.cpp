@@ -38,6 +38,16 @@ bool AdminService::deleteResource(int resourceId)
   return resourceRepository.deleteResource(resourceId);
 }
 
+std::unique_ptr<Resource> AdminService::getResourceById(int resourceId)
+{
+  return resourceRepository.getById(resourceId);
+}
+
+std::unique_ptr<Category> AdminService::getCategoryById(int categoryId)
+{
+  return categoryRepository.getById(categoryId);
+}
+
 // Category Management
 bool AdminService::addCategory(Category &category)
 {
@@ -89,6 +99,10 @@ bool AdminService::reactivateUserAccount(int userId)
   return userRepository.save(*user);
 }
 
+std::vector<User> AdminService::viewAllUsers(){
+    return userRepository.getAllUsers();
+}
+
 std::vector<User> AdminService::viewDeletionRequests()
 
 {
@@ -120,6 +134,11 @@ bool AdminService::processAccountDeletionRequest(int userId, bool approve)
 bool AdminService::deleteUserAccount(int userId)
 {
   return userRepository.deleteUser(userId);
+}
+
+std::unique_ptr<User> AdminService::getUserById(int userId)
+{
+  return userRepository.getById(userId);
 }
 
 // Fine Management

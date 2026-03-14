@@ -54,6 +54,8 @@ class AdminService{
         bool deleteResource(int resourceId);
         bool addResource(Resource &resource);
         bool editResource(Resource &updatedResource);
+        std::unique_ptr<Resource> getResourceById(int resourceId);
+        std::unique_ptr<Category> getCategoryById(int categoryId);
 
         bool deleteCategory(int categoryId);
         bool addCategory(Category &category);
@@ -71,7 +73,9 @@ class AdminService{
         bool deleteUserAccount(int userId);
         bool suspendUserAccount(int userId);
         bool reactivateUserAccount(int userId);
+        std::vector<User> viewAllUsers();
         std::vector<User> viewDeletionRequests();
+        std::unique_ptr<User> getUserById(int userId);
 
         // Fine Management 
         std::vector<Fine> viewAllFines();
