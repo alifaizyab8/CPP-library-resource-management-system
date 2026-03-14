@@ -62,7 +62,7 @@ class AdminService{
         // Request Approvals
         std::vector<Transaction> viewPendingBorrowRequests();
         std::vector<FundRequest> viewPendingFundRequests();
-        bool processBorrowRequest(int transactionId, bool approve);
+        bool processBorrowRequest(int transactionId, bool approve, std::string &dateToday);
         bool processAccountDeletionRequest(int userId, bool approve);
 
         // User Management
@@ -70,6 +70,7 @@ class AdminService{
         bool editUser(User &updatedData);
         bool deleteUserAccount(int userId);
         bool suspendUserAccount(int userId);
+        bool reactivateUserAccount(int userId);
         std::vector<User> viewDeletionRequests();
 
         // Fine Management 
@@ -80,6 +81,7 @@ class AdminService{
         bool waiveFine(int fineId);
         bool deleteFine(int fineId);
         bool updateFine(Fine &fine);
+        void updateDailyFines(const std::string &simulatedToday);
 
 
         // Reporting
@@ -88,8 +90,8 @@ class AdminService{
         bool generateIssuedAndOverdueReport(const std::string &filename);
 
         // Process
-        bool processFundRequest(int fundRequestId, bool approve);
-        bool processReturn(int transactionId);
+        bool processFundRequest(int fundRequestId, bool approve, std::string &dateToday);
+        bool processReturn(int transactionId, std::string &dateToday);
 };
 
 
