@@ -1,12 +1,9 @@
 #include "validator.h"
-#include "../domain/Resource.h"
-#include "../domain/User.h"
 
 namespace Validator
 {
-
     // Validates a Resource
-    inline ValidationResult validate(const Resource &resource)
+    ValidationResult validate(const Resource &resource)
     {
         ValidationResult result;
 
@@ -27,25 +24,26 @@ namespace Validator
             result.isValid = false;
             result.errors.push_back("Error: Publisher cannot be empty.");
         }
+
         if (resource.getPublicationYear() <= 0)
         {
             result.isValid = false;
             result.errors.push_back("Error: Publication year must be a positive integer.");
         }
 
-         if (resource.getIsbn().empty())
+        if (resource.getIsbn().empty())
         {
             result.isValid = false;
             result.errors.push_back("Error: ISBN cannot be empty.");
         }
 
-         if (resource.getTotalCopies() < 0)
+        if (resource.getTotalCopies() < 0)
         {
             result.isValid = false;
             result.errors.push_back("Error: Total copies cannot be negative.");
         }
 
-         if (resource.getAvailableCopies() < 0 || resource.getAvailableCopies() > resource.getTotalCopies())
+        if (resource.getAvailableCopies() < 0 || resource.getAvailableCopies() > resource.getTotalCopies())
         {
             result.isValid = false;
             result.errors.push_back("Error: Available copies must be between 0 and total copies.");
@@ -55,7 +53,7 @@ namespace Validator
     }
 
     // Validates a User
-    inline ValidationResult validate(const User &user)
+    ValidationResult validate(const User &user)
     {
         ValidationResult result;
 
@@ -64,23 +62,26 @@ namespace Validator
             result.isValid = false;
             result.errors.push_back("Error: Username must be at least 5 characters.");
         }
+
         if (user.getPassword().empty())
         {
             result.isValid = false;
             result.errors.push_back("Error: Password cannot be empty.");
         }
+
         if (user.getEmail().empty())
         {
             result.isValid = false;
             result.errors.push_back("Error: Email cannot be empty.");
         }
-         if (user.getBalance() < 0)
+
+        if (user.getBalance() < 0)
         {
             result.isValid = false;
             result.errors.push_back("Error: Balance cannot be negative.");
         }
 
-         if (user.getMembershipTypeId() <= 0)
+        if (user.getMembershipTypeId() <= 0)
         {
             result.isValid = false;
             result.errors.push_back("Error: Membership type ID must be a positive integer.");
