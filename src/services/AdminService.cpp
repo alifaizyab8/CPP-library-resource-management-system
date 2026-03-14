@@ -79,6 +79,16 @@ bool AdminService::suspendUserAccount(int userId)
   return userRepository.save(*user);
 }
 
+bool AdminService::reactivateUserAccount(int userId)
+{
+  std::unique_ptr<User> user = userRepository.getById(userId);
+  if (!user)
+    return false;
+
+  user->setIsActive(true); // Un-suspend them
+  return userRepository.save(*user);
+}
+
 std::vector<User> AdminService::viewDeletionRequests()
 
 {
@@ -146,23 +156,33 @@ bool AdminService::waiveFine(int fineId)
   std::unique_ptr<Fine> fine = fineRepository.getById(fineId);
 
   if (!fine)
-  {
-    return false; // Fine not found
-  }
+    return false;
+
+  transactionRepository.beginTransaction();
+
   fine->setFineAmount(0.0);
-  fine->setIsPaid(true); // Mark as paid since it's waived
-  return fineRepository.save(*fine);
-}
+  fine->setIsPaid(true);
 
-bool AdminService::deleteFine(int fineId)
-{
-  unique_ptr<Fine> fine = fineRepository.getById(fineId);
-  if (!fine)
+  if (!fineRepository.save(*fine))
   {
-    return false; // Fine not found
+    transactionRepository.rollbackTransaction();
+    return false;
   }
 
-  return fineRepository.deleteFine(fineId);
+  // Sync the Transaction table!
+  std::unique_ptr<Transaction> txn = transactionRepository.getById(fine->getTransactionId());
+  if (txn)
+  {
+    txn->setFineAmount(0.0);
+    if (!transactionRepository.updateTransaction(*txn))
+    {
+      transactionRepository.rollbackTransaction();
+      return false;
+    }
+  }
+
+  transactionRepository.commitTransaction();
+  return true;
 }
 
 // Reporting
@@ -294,72 +314,90 @@ std::vector<Transaction> AdminService::viewPendingBorrowRequests()
   return transactionRepository.getbyStatus("PENDING");
 }
 
-bool AdminService::processBorrowRequest(int transactionId, bool approve)
+bool AdminService::processBorrowRequest(int transactionId, bool approve, std::string &dateToday)
 {
   std::unique_ptr<Transaction> transaction = transactionRepository.getById(transactionId);
   if (!transaction)
-  {
-    return false; // Transaction not found
-  }
+    return false;
+
+  // starting transaction
+  transactionRepository.beginTransaction();
+
   if (approve)
   {
-    // Update transaction status to ISSUED and set issue/due dates
     transaction->setTransactionStatus("ISSUED");
-    transaction->setIssueDate(getCurrentDate());
-    transaction->setDueDate(getDueDate(14, transaction->getIssueDate()));
+    transaction->setIssueDate(dateToday);
+    transaction->setDueDate(getDueDate(14, dateToday));
 
-    // Decrease available copies of the resource
     std::unique_ptr<Resource> resource = resourceRepository.getById(transaction->getResourceId());
-    if (resource && (resource->getIsActive()) && resource->getAvailableCopies() > 0)
+    if (resource && resource->getIsActive() && resource->getAvailableCopies() > 0)
     {
       resource->setAvailableCopies(resource->getAvailableCopies() - 1);
-      resourceRepository.save(*resource);
+
+      // If resource save fails, abort everything
+      if (!resourceRepository.save(*resource))
+      {
+        transactionRepository.rollbackTransaction();
+        return false;
+      }
     }
     else
     {
-      return false; // Resource not available, cannot approve
+      transactionRepository.rollbackTransaction(); // Resource not available
+      return false;
     }
 
     BorrowingHistory historyRecord(
-        transaction->getUserId(),     // userId
-        transaction->getResourceId(), // resourceId
-        transaction->getIssueDate(),  // issueDate
-        transaction->getDueDate(),    // dueDate
-        "",                           // returnDate (Empty because it's not returned yet)
-        0.0                           // fineAmount (Starts at $0.0)
-    );
+        transaction->getUserId(), transaction->getResourceId(),
+        transaction->getIssueDate(), transaction->getDueDate(), "", 0.0);
 
-    borrowingHistoryRepository.save(historyRecord);
+    if (!borrowingHistoryRepository.save(historyRecord))
+    {
+      transactionRepository.rollbackTransaction();
+      return false;
+    }
   }
   else
   {
-    // If rejected, we can either delete the transaction or just update its status to REJECTED
     transaction->setTransactionStatus("REJECTED");
   }
 
-  return transactionRepository.updateTransaction(*transaction);
+  // Final save
+  if (transactionRepository.updateTransaction(*transaction))
+  {
+    transactionRepository.commitTransaction(); // success: commit all changes together
+    return true;
+  }
+  else
+  {
+    transactionRepository.rollbackTransaction(); //  failure: revert any changes made during this process
+    return false;
+  }
 }
 
-bool AdminService::processFundRequest(int fundRequestId, bool approve)
+bool AdminService::processFundRequest(int fundRequestId, bool approve, std::string &dateToday)
 {
   std::unique_ptr<FundRequest> request = fundRequestRepository.getById(fundRequestId);
 
   if (!request || request->getStatus() != "PENDING")
-  {
     return false;
-  }
 
-  request->setApprovalDate(getCurrentDate());
+  request->setApprovalDate(dateToday); // Use passed-in date!
+
+  // start transaction
+  transactionRepository.beginTransaction(); // (You can use any repo for the transaction command)
 
   if (approve)
   {
     std::unique_ptr<User> user = userRepository.getById(request->getUserId());
     if (!user)
+    {
+      transactionRepository.rollbackTransaction();
       return false;
+    }
 
     double newBalance = user->getBalance() + request->getRequestedAmount();
     user->setBalance(newBalance);
-
     request->setStatus("APPROVED");
     request->setAdminNotes("Approved");
 
@@ -371,14 +409,32 @@ bool AdminService::processFundRequest(int fundRequestId, bool approve)
     bool userSaved = userRepository.save(*user);
     bool requestSaved = fundRequestRepository.save(*request);
 
-    return userSaved && requestSaved;
+    if (userSaved && requestSaved)
+    {
+      transactionRepository.commitTransaction();
+      return true;
+    }
+    else
+    {
+      transactionRepository.rollbackTransaction();
+      return false;
+    }
   }
   else
   {
     request->setStatus("REJECTED");
     request->setAdminNotes("Rejected");
 
-    return fundRequestRepository.save(*request);
+    if (fundRequestRepository.save(*request))
+    {
+      transactionRepository.commitTransaction();
+      return true;
+    }
+    else
+    {
+      transactionRepository.rollbackTransaction();
+      return false;
+    }
   }
 }
 
@@ -387,60 +443,128 @@ std::vector<FundRequest> AdminService::viewPendingFundRequests()
   return fundRequestRepository.getAllFundRequests();
 }
 
-bool AdminService::processReturn(int transactionId)
+bool AdminService::processReturn(int transactionId, std::string &dateToday)
 {
   std::unique_ptr<Transaction> txn = transactionRepository.getById(transactionId);
 
-  // 1. Validate active transaction
+  // Validate active transaction
   if (!txn || txn->getTransactionStatus() != "ISSUED")
   {
     return false;
   }
 
-  std::string today = getCurrentDate();
+  // start transaction
+  transactionRepository.beginTransaction();
 
-  // 2. Mark transaction as returned
+  std::string today = dateToday;
+
+  // Mark transaction as returned
   txn->setTransactionStatus("RETURNED");
   txn->setIsReturned(true);
   txn->setReturnDate(today);
 
-  // 3. Process overdue fines if applicable
-  double generatedFine = 0.0;
-  if (today > txn->getDueDate())
-  {
-    txn->setIsOverdue(true);
-    generatedFine = 5.0; // Configurable late fee
-    txn->setFineAmount(generatedFine);
-
-    Fine newFine;
-    newFine.setUserId(txn->getUserId());
-    newFine.setFineAmount(generatedFine);
-    newFine.setIsPaid(false);
-
-    fineRepository.save(newFine);
-  }
-
-  // 4. Restore resource inventory
+  // Restore resource inventory safely
   std::unique_ptr<Resource> resource = resourceRepository.getById(txn->getResourceId());
   if (resource)
   {
     resource->setAvailableCopies(resource->getAvailableCopies() + 1);
-    resourceRepository.save(*resource);
+
+    // Check for failure!
+    if (!resourceRepository.save(*resource))
+    {
+      transactionRepository.rollbackTransaction();
+      return false;
+    }
   }
 
-  // 5. Update the permanent borrowing history record
+  // Update the permanent borrowing history record safely
   std::vector<BorrowingHistory> userHistory = borrowingHistoryRepository.getByUserId(txn->getUserId());
   for (BorrowingHistory &history : userHistory)
   {
     if (history.getResourceId() == txn->getResourceId() && history.getReturnDate().empty())
     {
       history.setReturnDate(today);
-      history.setFineAmount(generatedFine);
-      borrowingHistoryRepository.save(history);
+      history.setFineAmount(txn->getFineAmount());
+
+      // Check for failure!
+      if (!borrowingHistoryRepository.save(history))
+      {
+        transactionRepository.rollbackTransaction();
+        return false;
+      }
       break;
     }
   }
 
-  // 6. Persist final transaction state
-  return transactionRepository.updateTransaction(*txn);
+  // Persist final transaction state and Commit
+  if (transactionRepository.updateTransaction(*txn))
+  {
+    transactionRepository.commitTransaction(); // SUCCESS: Save everything!
+    return true;
+  }
+  else
+  {
+    transactionRepository.rollbackTransaction(); // FAIL: Undo inventory changes
+    return false;
+  }
+}
+
+void AdminService::updateDailyFines(const std::string &dateToday)
+{
+  // Get all active transactions (books not returned yet)
+  std::vector<Transaction> activeTransactions = transactionRepository.getActiveIssues();
+
+  for (Transaction &txn : activeTransactions)
+  {
+    // Check if the simulated date has passed the due date
+    if (dateToday > txn.getDueDate())
+    {
+      txn.setIsOverdue(true);
+
+      // Calculate exact days late
+      int daysLate = calculateDaysOverdue(txn.getDueDate(), dateToday);
+
+      if (daysLate > 0)
+      {
+        double currentFineAmount = daysLate * 5.0; // $5 per day
+
+        // Check if a fine record already exists for this transaction
+        // To avoid creating multiple fines for the same overdue book
+        bool fineExists = false;
+        std::vector<Fine> userFines = fineRepository.getByUserId(txn.getUserId());
+
+        for (Fine &existingFine : userFines)
+        {
+          if (existingFine.getTransactionId() == txn.getTransactionId())
+          {
+            // Update the existing fine!
+            existingFine.setDaysOverdue(daysLate);
+            existingFine.setFineAmount(currentFineAmount);
+            existingFine.setFineDate(dateToday);
+            fineRepository.save(existingFine);
+            fineExists = true;
+            break;
+          }
+        }
+
+        // 5. If no fine existed yet, creates a brand new one
+        if (!fineExists)
+        {
+          Fine newFine;
+          newFine.setTransactionId(txn.getTransactionId());
+          newFine.setUserId(txn.getUserId());
+          newFine.setDaysOverdue(daysLate);
+          newFine.setFineAmount(currentFineAmount);
+          newFine.setFineDate(dateToday);
+          newFine.setIsPaid(false);
+
+          fineRepository.save(newFine);
+        }
+
+        // Update the transaction record to reflect the new fine
+        txn.setFineAmount(currentFineAmount);
+        transactionRepository.updateTransaction(txn);
+      }
+    }
+  }
 }
