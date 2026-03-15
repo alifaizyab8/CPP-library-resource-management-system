@@ -37,7 +37,7 @@ int main()
     // ==========================================
 
     // Initialize SQLite Database
-    DatabaseInitializer startDBService("library.db");
+    DatabaseInitializer startDBService("../src/db/library.db");
     if (!startDBService.open())
     {
         std::cerr << "CRITICAL ERROR: Failed to open database.\n";
