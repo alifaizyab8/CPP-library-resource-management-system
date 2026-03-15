@@ -1,82 +1,95 @@
 #include "AuthMenu.h"
 #include "ConsoleUtils.h"
-#include<iostream>
-#include<cstdlib>
-#include<limits>
+#include <iostream>
+#include <cstdlib>
+#include <limits>
 
-AuthMenu::AuthMenu(AuthenticationService& authService, const std::string& today)
+/* *************************************************************************
+                 ---------- CONSTRUCTOR ----------
+   ************************************************************************* */
+
+AuthMenu::AuthMenu(AuthenticationService &authService, const std::string &today)
     : authService(authService), dateToday(today)
 {
 }
+
+/* *************************************************************************
+                 ---------- ADMIN LOGIN ----------
+   ************************************************************************* */
+
 ActiveSession AuthMenu::handleAdminLogin()
 {
     std::string username, password;
 
-    std::cout << std::endl;
-    std::cout << "=== ADMINISTRATOR LOGIN ===\n";
+    std::cout << "\n=== ADMINISTRATOR LOGIN ===\n";
     std::cout << "Username: ";
     std::cin >> username;
     std::cout << "Password: ";
     std::cin >> password;
 
     std::unique_ptr<Administrator> admin = authService.loginAdmin(username, password);
-    if(admin != nullptr)
-    {
 
-        if(!admin->getIsActive())
+    if (admin != nullptr)
+    {
+        if (!admin->getIsActive())
         {
-            std::cout << "❌ Error: This admin account is disabled.\n";
+            std::cout << " Error: This admin account is disabled.\n";
             return ActiveSession(); // Returns empty session (-1, -1)
         }
 
-        std::cout << "✅ Login Successful! Welcome, " << admin->getFirstName() << ".\n";
+        std::cout << " Login Successful! Welcome, " << admin->getFirstName() << ".\n";
 
         ActiveSession session;
         session.adminId = admin->getAdminId();
         return session;
     }
-
     else
     {
-        std::cout << "❌ Invalid Username or Password.\n";
+        std::cout << " Invalid Username or Password.\n";
         return ActiveSession(); // Returns empty session (-1, -1)
     }
-
-
 }
+
+/* *************************************************************************
+                 ---------- USER LOGIN ----------
+   ************************************************************************* */
 
 ActiveSession AuthMenu::handleUserLogin()
 {
     std::string username, password;
 
-    std::cout << std::endl;
-    std::cout << "=== MEMBER LOGIN ===\n";
+    std::cout << "\n=== MEMBER LOGIN ===\n";
     std::cout << "Username: ";
     std::cin >> username;
     std::cout << "Password: ";
     std::cin >> password;
 
     std::unique_ptr<User> user = authService.loginUser(username, password);
+
     if (user != nullptr)
     {
         if (!user->getIsActive())
         {
-            std::cout << "❌ Error: This account is disabled or suspended. Please contact the administrator.\n";
+            std::cout << " Error: This account is disabled or suspended. Please contact the administrator.\n";
             return ActiveSession(); // Returns empty session (-1, -1)
         }
 
-        std::cout << "✅ Login Successful! Welcome, " << user->getFirstName() << ".\n";
+        std::cout << " Login Successful! Welcome, " << user->getFirstName() << ".\n";
 
         ActiveSession session;
-        session.userId = user->getUserId(); 
+        session.userId = user->getUserId();
         return session;
     }
     else
     {
-        std::cout << "❌ Invalid Username or Password.\n";
+        std::cout << " Invalid Username or Password.\n";
         return ActiveSession(); // Returns empty session (-1, -1)
     }
 }
+
+/* *************************************************************************
+                 ---------- MAIN AUTH GATEWAY ----------
+   ************************************************************************* */
 
 ActiveSession AuthMenu::displayMenu()
 {
@@ -90,7 +103,8 @@ ActiveSession AuthMenu::displayMenu()
 
         // Print the Header
         std::cout << "========================================\n";
-        std::cout << "      LIBRARY AND RESOURCE MANAGEMENT SYSTEM      \n";
+        std::cout << "  LIBRARY AND RESOURCE MANAGEMENT SYSTEM  \n";
+        std::cout << "          Date: " << dateToday << "\n";
         std::cout << "========================================\n";
         std::cout << "1. Member Login\n";
         std::cout << "2. Administrator Login\n";
@@ -118,7 +132,7 @@ ActiveSession AuthMenu::displayMenu()
                 return currentSession;
 
             // If login failed, pause the screen so they can read the error
-            std::cout << "Press Enter to return to main menu...";
+            std::cout << "\nPress Enter to return to main menu...";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.get();
             break;
@@ -128,14 +142,17 @@ ActiveSession AuthMenu::displayMenu()
             if (currentSession.adminId != -1)
                 return currentSession;
 
-            std::cout << "Press Enter to return to main menu...";
+            std::cout << "\nPress Enter to return to main menu...";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.get();
             break;
 
         case 3:
-            //handleRegistration();
-            std::cout << "Press Enter to return to main menu...";
+            std::cout << "\n=== NEW MEMBER REGISTRATION ===\n";
+            std::cout << "Member self-registration is currently disabled.\n";
+            std::cout << "Please contact an Administrator at the front desk to create your account.\n";
+
+            std::cout << "\nPress Enter to return to main menu...";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.get();
             break;
