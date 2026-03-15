@@ -40,10 +40,9 @@ bool UserRepository::insertUser(User &user)
         sqlite3_bind_double(stmt, 8, user.getBalance()) != SQLITE_OK ||
         sqlite3_bind_int(stmt, 9, user.getMembershipTypeId()) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 10, user.getRegistrationDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
-        sqlite3_bind_int(stmt, 11, user.getIsActive() ? 1 : 0) != SQLITE_OK)
-        sqlite3_bind_int(stmt, 12, user.getDeletionRequested() ? 1 : 0); // 12th bind for accomodation
+        sqlite3_bind_int(stmt, 11, user.getIsActive() ? 1 : 0) != SQLITE_OK ||
+        sqlite3_bind_int(stmt, 12, user.getDeletionRequested() ? 1 : 0) != SQLITE_OK)
     {
-
         cerr << "Failed to bind parameters for INSERT: " << sqlite3_errmsg(db) << endl;
         sqlite3_finalize(stmt);
         return false;

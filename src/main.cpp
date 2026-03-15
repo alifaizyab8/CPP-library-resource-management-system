@@ -85,7 +85,6 @@ int main()
 
     // utility function
     std::string systemDate = getCurrentDate();
-
     std::cout << "\n[System] Synchronizing database states...\n";
     std::cout << "[System] Calculating overdues and updating daily fines for " << systemDate << "...\n";
 
