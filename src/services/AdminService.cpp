@@ -12,7 +12,7 @@
 #include "../infrastructure/repositories/ReservationRepository.h"
 #include "../infrastructure/repositories/MembershipTypeRepository.h"
 #include "../infrastructure/repositories/BorrowingHistoryRepository.h"
-// #include "../infrastructure/repositories/AdministratorRepository.h"
+#include "../infrastructure/repositories/AdministratorRepository.h"
 
 /* *************************************************************************
                  ---------- CONSTRUCTORS & DESTRUCTORS ----------
@@ -21,10 +21,10 @@
 AdminService::AdminService(UserRepository &userRepo, FineRepository &fineRepo, ResourceRepository &resourceRepo,
                            CategoryRepository &categoryRepo, FundRequestRepository &fundRequestRepo, TransactionRepository &transactionRepo,
                            ReservationRepository &reservationRepo, MembershipTypeRepository &membershipTypeRepo,
-                           BorrowingHistoryRepository &borrowingHistoryRepo)
+                           BorrowingHistoryRepository &borrowingHistoryRepo, AdministratorRepository &administratorRepo)
     : userRepository(userRepo), fineRepository(fineRepo), resourceRepository(resourceRepo), categoryRepository(categoryRepo),
       fundRequestRepository(fundRequestRepo), transactionRepository(transactionRepo), reservationRepository(reservationRepo),
-      membershipTypeRepository(membershipTypeRepo), borrowingHistoryRepository(borrowingHistoryRepo) {}
+      membershipTypeRepository(membershipTypeRepo), borrowingHistoryRepository(borrowingHistoryRepo), administratorRepository(administratorRepo) {}
 
 /* *************************************************************************
                  ---------- RESOURCE MANAGEMENT ----------
@@ -48,6 +48,16 @@ bool AdminService::deleteResource(int resourceId)
 std::unique_ptr<Resource> AdminService::getResourceById(int resourceId)
 {
   return resourceRepository.getById(resourceId);
+}
+
+std::vector<Resource> AdminService::viewAllResources()
+{
+  return resourceRepository.getAll();
+}
+
+std::vector<Category> AdminService::viewAllCategories()
+{
+  return categoryRepository.getAll();
 }
 
 /* *************************************************************************
@@ -154,6 +164,16 @@ std::unique_ptr<User> AdminService::getUserById(int userId)
                  ---------- FINE MANAGEMENT ----------
    ************************************************************************* */
 
+bool AdminService::updateFine(Fine &fine)
+{
+  return fineRepository.save(fine);
+}
+
+bool AdminService::deleteFine(int fineId)
+{
+  return fineRepository.deleteFine(fineId);
+}
+
 std::vector<Fine> AdminService::viewAllFines()
 {
   return fineRepository.getAllFines();
@@ -180,6 +200,10 @@ bool AdminService::markFineAsPaid(int fineId)
 
   fine->setIsPaid(true);
   return fineRepository.save(*fine);
+}
+std::unique_ptr<Fine> AdminService::getFineById(int fineId)
+{
+  return fineRepository.getById(fineId);
 }
 
 bool AdminService::waiveFine(int fineId)
@@ -507,6 +531,16 @@ bool AdminService::processReturn(int transactionId, std::string &dateToday)
   }
 }
 
+std::vector<Transaction> AdminService::viewTransactionsByUser(int userId)
+{
+  return transactionRepository.getByUserId(userId);
+}
+
+std::vector<Transaction> AdminService::viewAllTransactions()
+{
+  return transactionRepository.getAllTransactions();
+}
+
 /* *************************************************************************
                  ---------- FUND REQUEST PROCESSING ----------
    ************************************************************************* */
@@ -576,4 +610,81 @@ bool AdminService::processFundRequest(int fundRequestId, bool approve, std::stri
       return false;
     }
   }
+}
+
+/* *************************************************************************
+                 ---------- MEMBERSHIP TYPE MANAGEMENT ----------
+   ************************************************************************* */
+
+std::vector<MembershipType> AdminService::viewAllMembershipTypes()
+{
+  return membershipTypeRepository.getAllMembershipTypes();
+}
+
+bool AdminService::addMembershipType(MembershipType &type)
+{
+  return membershipTypeRepository.save(type);
+}
+
+bool AdminService::editMembershipType(MembershipType &updatedType)
+{
+  return membershipTypeRepository.save(updatedType);
+}
+
+bool AdminService::deleteMembershipType(int typeId)
+{
+  return membershipTypeRepository.deleteMembershipType(typeId);
+}
+
+std::unique_ptr<MembershipType> AdminService::getMembershipTypeById(int typeId)
+{
+  return membershipTypeRepository.getById(typeId);
+}
+/* *************************************************************************
+                 ---------- RESERVATION MANAGEMENT ----------
+   ************************************************************************* */
+
+std::vector<Reservation> AdminService::viewAllReservations()
+{
+  return reservationRepository.getAllReservations();
+}
+
+std::vector<Reservation> AdminService::viewReservationsByUser(int userId)
+{
+  return reservationRepository.getByUserId(userId);
+}
+
+bool AdminService::cancelReservation(int reservationId)
+{
+  std::unique_ptr<Reservation> reservation = reservationRepository.getById(reservationId);
+
+  if (!reservation)
+  {
+    return false;
+  }
+
+  reservation->setIsCancelled(true);
+  reservation->setStatus("CANCELLED");
+
+  return reservationRepository.save(*reservation);
+}
+
+/* *************************************************************************
+                 ---------- ADMINISTRATOR MANAGEMENT ----------
+   ************************************************************************* */
+
+std::vector<Administrator> AdminService::viewAllAdministrators()
+{
+  return administratorRepository.getAllAdministrators();
+}
+
+bool AdminService::addAdministrator(Administrator &admin)
+{
+  return administratorRepository.save(admin);
+}
+
+bool AdminService::deleteAdministrator(int adminId)
+{
+  // Safety check to prevent the last admin from deleting themselves could go here
+  return administratorRepository.deleteAdministrator(adminId);
 }
