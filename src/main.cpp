@@ -25,7 +25,7 @@
 #include "presentation/Session.h"
 #include "presentation/AuthMenu.h"
 #include "presentation/UserMenu.h"
-// #include "presentation/AdminMenu.h"  >>> will be uncommented once work on this is completed
+#include "presentation/AdminMenu.h" 
 
 // Utilities
 #include "Utility/date.h"
@@ -37,7 +37,7 @@ int main()
     // ==========================================
 
     // Initialize SQLite Database
-    DatabaseInitializer startDBService("../src/db/library.db");
+    DatabaseInitializer startDBService("../CPP-library-resource-management-system/src/db/library.db");
     if (!startDBService.open())
     {
         std::cerr << "CRITICAL ERROR: Failed to open database.\n";
@@ -63,7 +63,7 @@ int main()
     BorrowingHistoryRepository historyRepo(db);
     FundRequestRepository fundReqRepo(db);
     MembershipTypeRepository membershipRepo(db);
-    ReservationRepository reservationRepo(db); // Not implemented into program yet
+    ReservationRepository reservationRepo(db);
 
     // Create service instances
     AuthenticationService authService(userRepo, adminRepo);
@@ -71,9 +71,10 @@ int main()
     UserService userService(userRepo, resourceRepo, transactionRepo,
                             fineRepo, historyRepo, fundReqRepo, membershipRepo);
 
+    
     AdminService adminService(userRepo, fineRepo, resourceRepo, categoryRepo,
                               fundReqRepo, transactionRepo, reservationRepo,
-                              membershipRepo, historyRepo);
+                              membershipRepo, historyRepo, adminRepo);
 
     // ==========================================
     // 2. MOCK CLOCK & PRE-COMPUTATION
@@ -120,14 +121,8 @@ int main()
         else if (session.adminId != -1)
         {
             // 5. THE INNER LOOP: Route to Admin Dashboard
-            // AdminMenu adminMenu(adminService, session.adminId, systemDate);
-            // adminMenu.displayMenu(); // Traps execution until Admin logs out
-
-            std::cout << "\n[Admin Dashboard Placeholder]\n";
-            std::cout << "Admin menu is currently under construction.\n";
-            std::cout << "Press Enter to log out...";
-            std::cin.ignore();
-            std::cin.get();
+            AdminMenu adminMenu(adminService, systemDate);
+            adminMenu.displayDashboard(session.adminId); // Traps execution until Admin logs out
         }
     }
 
