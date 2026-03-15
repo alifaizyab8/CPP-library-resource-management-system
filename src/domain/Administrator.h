@@ -18,6 +18,7 @@ public:
                   const std::string &lName, const std::string &email, const std::string &cDate, bool active)
         : adminId(id), username(uname), password(pass), firstName(fName), lastName(lName),
           email(email), createdDate(cDate), isActive(active) {}
+    Administrator() : adminId(0), isActive(true) {}
 
     int getAdminId() const { return adminId; }
     std::string getUsername() const { return username; }
@@ -31,4 +32,11 @@ public:
     {
         adminId = id;
     }
+    void setUsername(const std::string &uname) { username = uname; }
+    void setPassword(const std::string &pass) { password = pass; }
+    void setFirstName(const std::string &fName) { firstName = fName; }
+    void setLastName(const std::string &lName) { lastName = lName; }
+    void setEmail(const std::string &mail) { email = mail; }
+    void setCreatedDate(const std::string &cDate) { createdDate = cDate; }
+    void setIsActive(bool active) { isActive = active; }
 };
