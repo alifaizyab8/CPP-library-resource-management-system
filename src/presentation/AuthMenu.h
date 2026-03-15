@@ -12,7 +12,7 @@ class AuthMenu
 
         ActiveSession handleAdminLogin();
         ActiveSession handleUserLogin();
-        void handleRegistration();
+        //void handleRegistration();
 
     public:
         AuthMenu(AuthenticationService &authSvc, const std::string &today);

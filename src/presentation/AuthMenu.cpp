@@ -130,7 +130,7 @@ ActiveSession AuthMenu::displayMenu()
             break;
 
         case 3:
-            handleRegistration();
+            //handleRegistration();
             std::cout << "Press Enter to return to main menu...";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cin.get();

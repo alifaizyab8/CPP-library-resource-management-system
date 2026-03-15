@@ -15,7 +15,7 @@ std::string getCurrentDate()
     return std::to_string(year) + "-" + std::to_string(month) + "-" + std::to_string(day);
 }
 
-std::string getDueDate(int daysToAdd, std::string currentDate=getCurrentDate())
+std::string getDueDate(int daysToAdd, std::string currentDate)
 {
     // parse currentDate
     int year, month, day;

@@ -44,27 +44,25 @@ public:
                 FineRepository &finRepo, BorrowingHistoryRepository &brhRepo, FundRequestRepository &frRepo,
                 MembershipTypeRepository &mtRepo);
 
+    // Profile Management
+    std::unique_ptr<User> getUserDetails(int userId);
     bool updateProfile(User &user);
-
     std::string requestAccountDeletion(int userId);
 
-    // Browse all available resources
+    // Catalogue
     std::vector<Resource> showAllAvailableCatalogue();
-
-    // Search by title or author
     std::vector<Resource> searchCatalogue(const std::string &keyword);
 
+    // Borrowing & Transactions
     std::string requestToBorrow(int userId, int resourceId);
+    bool cancelPendingBorrowRequest(int transactionId, int userId);
 
-    // View Borrowing History
+    std::vector<Transaction> getCurrentlyBorrowedResources(int userId);
+    std::vector<Transaction> getPendingBorrowRequests(int userId);
     std::vector<BorrowingHistory> getBorrowingHistory(int userId);
-
-    // View Transaction History
     std::vector<Transaction> getTransactionHistory(int userId);
 
-    // Fines
+    // Finance Related
     std::vector<Fine> getCurrentFines(int userId);
-
-    // Create Fund Request
-    bool requestFund(int userId, double amount, const std::string &simualtedDate);
+    bool requestFund(int userId, double amount, const std::string &simulatedDate);
 };

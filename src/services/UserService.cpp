@@ -212,3 +212,53 @@ bool UserService::requestFund(int userId, double amount, const std::string &simu
 
     return fundReqRepo.save(request);
 }
+
+// Getthe User
+std::unique_ptr<User> UserService::getUserDetails(int userId)
+{
+    return userRepo.getById(userId);
+}
+
+// get currently owned or borrowed resources
+std::vector<Transaction> UserService::getCurrentlyBorrowedResources(int userId)
+{
+    std::vector<Transaction> all = transactionRepo.getByUserId(userId);
+    std::vector<Transaction> owned;
+    for (const auto &txn : all)
+    {
+        if (txn.getTransactionStatus() == "ISSUED" && !txn.getIsReturned())
+        {
+            owned.push_back(txn);
+        }
+    }
+    return owned;
+}
+
+// get pending borrowals
+std::vector<Transaction> UserService::getPendingBorrowRequests(int userId)
+{
+    std::vector<Transaction> all = transactionRepo.getByUserId(userId);
+    std::vector<Transaction> pending;
+    for (const auto &txn : all)
+    {
+        if (txn.getTransactionStatus() == "PENDING")
+        {
+            pending.push_back(txn);
+        }
+    }
+    return pending;
+}
+
+// cancel a pending request
+bool UserService::cancelPendingBorrowRequest(int transactionId, int userId)
+{
+    std::unique_ptr<Transaction> txn = transactionRepo.getById(transactionId);
+
+    // 3 checks: transaction exists, belongs to the same user and has status of pending
+    if (txn != nullptr && txn->getUserId() == userId && txn->getTransactionStatus() == "PENDING")
+    {
+        txn->setTransactionStatus("CANCELLED");
+        return transactionRepo.save(*txn);
+    }
+    return false;
+}
