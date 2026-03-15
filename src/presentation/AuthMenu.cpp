@@ -4,6 +4,10 @@
 #include<cstdlib>
 #include<limits>
 
+AuthMenu::AuthMenu(AuthenticationService& authService, const std::string& today)
+    : authService(authService), dateToday(today)
+{
+}
 ActiveSession AuthMenu::handleAdminLogin()
 {
     std::string username, password;
