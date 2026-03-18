@@ -16,43 +16,31 @@ FundRequestRepository::~FundRequestRepository() {}
 
 bool FundRequestRepository::insertFundRequest(FundRequest &request)
 {
-
     const char *sql =
         "INSERT INTO fund_requests "
-        "(user_id, requested_amount, request_date, status, "
-        "admin_id, approval_date, admin_notes) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?);";
+        "(user_id, requested_amount, request_date, status) "
+        "VALUES (?, ?, ?, ?);";
 
     sqlite3_stmt *stmt = nullptr;
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
     {
-        cerr << "Failed to prepare INSERT: "
-             << sqlite3_errmsg(db) << endl;
+        cerr << "Failed to prepare INSERT: " << sqlite3_errmsg(db) << endl;
         return false;
     }
-
     if (sqlite3_bind_int(stmt, 1, request.getUserId()) != SQLITE_OK ||
         sqlite3_bind_double(stmt, 2, request.getRequestedAmount()) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 3, request.getRequestDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
-        sqlite3_bind_text(stmt, 4, request.getStatus().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
-        sqlite3_bind_int(stmt, 5, request.getAdminId()) != SQLITE_OK ||
-        sqlite3_bind_text(stmt, 6, request.getApprovalDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
-        sqlite3_bind_text(stmt, 7, request.getAdminNotes().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK)
+        sqlite3_bind_text(stmt, 4, request.getStatus().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK)
     {
-
-        cerr << "Failed to bind parameters for INSERT: "
-             << sqlite3_errmsg(db) << endl;
+        cerr << "Failed to bind parameters for INSERT: " << sqlite3_errmsg(db) << endl;
         sqlite3_finalize(stmt);
         return false;
     }
-
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
-
     if (!success)
     {
-        cerr << "Failed to execute INSERT: "
-             << sqlite3_errmsg(db) << endl;
+        cerr << "Failed to execute INSERT: " << sqlite3_errmsg(db) << endl;
     }
     else
     {
