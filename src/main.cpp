@@ -107,6 +107,21 @@ int main()
     // cin>>v;
     // Administrator admin(0,"admin","admin","Judy","Hops","hops@zpd.zu","2012-11-11",true);
     // adminRepo.save(admin);
+    // Seed  for categories
+    // Category booksCat;
+    // booksCat.setName("Books");
+    // booksCat.setDescription("Physical printed books, including fiction, non-fiction, and reference materials.");
+    // adminService.addCategory(booksCat);
+
+    // Category journalsCat;
+    // journalsCat.setName("Journals & Magazines");
+    // journalsCat.setDescription("Periodicals, academic journals, and weekly or monthly magazines.");
+    // adminService.addCategory(journalsCat);
+
+    // Category digitalCat;
+    // digitalCat.setName("Digital Media");
+    // digitalCat.setDescription("E-books, audiobooks, CDs, DVDs, and other digital resources.");
+    // adminService.addCategory(digitalCat);
     // ==========================================
     while (running)
     {
