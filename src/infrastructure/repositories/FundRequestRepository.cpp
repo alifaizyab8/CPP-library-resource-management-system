@@ -77,26 +77,27 @@ bool FundRequestRepository::updateFundRequest(const FundRequest &request)
         sqlite3_bind_double(stmt, 2, request.getRequestedAmount()) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 3, request.getRequestDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 4, request.getStatus().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
-        sqlite3_bind_int(stmt, 5, request.getAdminId()) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 6, request.getApprovalDate().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_text(stmt, 7, request.getAdminNotes().c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
         sqlite3_bind_int(stmt, 8, request.getRequestId()) != SQLITE_OK)
     {
-
-        cerr << "Failed to bind parameters for UPDATE: "
-             << sqlite3_errmsg(db) << endl;
+        cerr << "Failed to bind parameters for UPDATE: " << sqlite3_errmsg(db) << endl;
         sqlite3_finalize(stmt);
         return false;
     }
-
+    if (request.getAdminId() == 0)
+    {
+        sqlite3_bind_null(stmt, 5);
+    }
+    else
+    {
+        sqlite3_bind_int(stmt, 5, request.getAdminId());
+    }
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
-
     if (!success)
     {
-        cerr << "Failed to execute UPDATE: "
-             << sqlite3_errmsg(db) << endl;
+        cerr << "Failed to execute UPDATE: " << sqlite3_errmsg(db) << endl;
     }
-
     sqlite3_finalize(stmt);
     return success;
 }

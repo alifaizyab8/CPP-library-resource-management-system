@@ -95,6 +95,7 @@ void UserMenu::handleUserUI()
         case 0:
             std::cout << "Logging out...\n";
             running = false;
+            ConsoleUtils::clearScreen();
             break;
         default:
             std::cout << "Invalid choice. Please try again.\n";
