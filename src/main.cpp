@@ -25,7 +25,7 @@
 #include "presentation/Session.h"
 #include "presentation/AuthMenu.h"
 #include "presentation/UserMenu.h"
-#include "presentation/AdminMenu.h" 
+#include "presentation/AdminMenu.h"
 
 // Utilities
 #include "Utility/date.h"
@@ -71,7 +71,6 @@ int main()
     UserService userService(userRepo, resourceRepo, transactionRepo,
                             fineRepo, historyRepo, fundReqRepo, membershipRepo);
 
-    
     AdminService adminService(userRepo, fineRepo, resourceRepo, categoryRepo,
                               fundReqRepo, transactionRepo, reservationRepo,
                               membershipRepo, historyRepo, adminRepo);
@@ -101,6 +100,14 @@ int main()
     AuthMenu authMenu(authService, systemDate);
     bool running = true;
 
+    // ==========================================
+    // Seeder for admin
+    // int v;
+    // cout<<"Enter v";
+    // cin>>v;
+    // Administrator admin(0,"admin","admin","Judy","Hops","hops@zpd.zu","2012-11-11",true);
+    // adminRepo.save(admin);
+    // ==========================================
     while (running)
     {
         // 4. THE AUTHENTICATION GATEWAY (Routing)
