@@ -180,7 +180,7 @@ bool DatabaseInitializer::createTables()
         "requested_amount REAL NOT NULL,"
         "request_date TEXT NOT NULL,"
         "status TEXT NOT NULL,"
-        "admin_id INTEGER DEFAULT 0,"
+        "admin_id INTEGER DEFAULT NULL,"
         "approval_date TEXT,"
         "admin_notes TEXT,"
         "FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,"
