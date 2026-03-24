@@ -30,8 +30,27 @@
 // Utilities
 #include "Utility/date.h"
 
+// void runPolymorphismTest()
+// {
+//     std::cout << "\n--- RUNNING POLYMORPHISM TEST ---\n";
+
+//     // Create dummy objects
+//     User testUser;
+//     Administrator testAdmin;
+
+//     // Create Person pointers (This proves Abstract Classes and Inheritance)
+//     Person *person1 = &testUser;
+//     Person *person2 = &testAdmin;
+
+//     // Call the exact same function on both, but get different results!
+//     std::cout << "Person 1 Role: " << person1->getRole() << "\n";
+//     std::cout << "Person 2 Role: " << person2->getRole() << "\n";
+//     std::cout << "---------------------------------\n\n";
+// }
+
 int main()
 {
+    // runPolymorphismTest();
     // ==========================================
     // 1. BOOT SEQUENCE (Initialization)
     // ==========================================
