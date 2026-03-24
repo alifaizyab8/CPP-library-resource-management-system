@@ -1,42 +1,31 @@
 #pragma once
+#include "Person.h"
 #include <string>
 
-class Administrator
+class Administrator : public Person
 {
 private:
-    int adminId;
-    std::string username;
-    std::string password;
-    std::string firstName;
-    std::string lastName;
-    std::string email;
     std::string createdDate;
-    bool isActive;
 
 public:
+    // Default Constructor
+    Administrator() : Person(), createdDate("")
+    {
+        this->isActive = true;
+    }
+
+    // Parameterized Constructor
     Administrator(int id, const std::string &uname, const std::string &pass, const std::string &fName,
                   const std::string &lName, const std::string &email, const std::string &cDate, bool active)
-        : adminId(id), username(uname), password(pass), firstName(fName), lastName(lName),
-          email(email), createdDate(cDate), isActive(active) {}
-    Administrator() : adminId(0), isActive(true) {}
+        : Person(id, uname, pass, fName, lName, email, active), createdDate(cDate) {}
 
-    int getAdminId() const { return adminId; }
-    std::string getUsername() const { return username; }
-    std::string getPassword() const { return password; }
-    std::string getFirstName() const { return firstName; }
-    std::string getLastName() const { return lastName; }
-    std::string getEmail() const { return email; }
+    // Overriding Pure Virtual Function (Satisfies Polymorphism)
+    std::string getRole() const override { return "Administrator"; }
+
+    int getAdminId() const { return id; }
+    void setAdminId(int adminId) { id = adminId; }
+
+    // Unique Getters/Setters
     std::string getCreatedDate() const { return createdDate; }
-    bool getIsActive() const { return isActive; }
-    void setAdminId(int id)
-    {
-        adminId = id;
-    }
-    void setUsername(const std::string &uname) { username = uname; }
-    void setPassword(const std::string &pass) { password = pass; }
-    void setFirstName(const std::string &fName) { firstName = fName; }
-    void setLastName(const std::string &lName) { lastName = lName; }
-    void setEmail(const std::string &mail) { email = mail; }
     void setCreatedDate(const std::string &cDate) { createdDate = cDate; }
-    void setIsActive(bool active) { isActive = active; }
 };
