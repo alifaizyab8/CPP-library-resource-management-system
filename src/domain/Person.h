@@ -25,7 +25,7 @@ public:
     // Virtual Destructor
     virtual ~Person() = default;
 
-    // Pure Virtual Function 
+    // Pure Virtual Function
     virtual std::string getRole() const = 0;
 
     // Getters

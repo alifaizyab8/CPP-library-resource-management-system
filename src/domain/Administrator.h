@@ -11,7 +11,7 @@ public:
     // Default Constructor
     Administrator() : Person(), createdDate("")
     {
-        this->isActive = true;
+        isActive = true;
     }
 
     // Parameterized Constructor
